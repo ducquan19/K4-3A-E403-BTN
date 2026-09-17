@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VLearn Grounded Tutor — Nhóm BTN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- TOP NAVBAR -->
+    <header class="navbar">
+      <div class="nav-left">
+        <div class="logo-badge">
+          <span class="logo-icon">🎓</span>
+          <span class="logo-text">VLearn <span class="accent-text">Tutor</span></span>
+        </div>
+        <span class="version-tag">Track A1 · Nhóm BTN</span>
+        <span class="guardrail-badge">🛡️ Grounded Guardrail Active</span>
+      </div>
+
+      <div class="nav-right">
+        <div id="connectionStatus" class="status-indicator not-connected">
+          <span class="status-dot"></span>
+          <span id="statusText">Chưa có API Key</span>
+        </div>
+        <button id="btnOpenConfig" class="btn-secondary">⚙️ Cấu hình API</button>
+        <button id="btnOpenInspector" class="btn-secondary">🔍 AI Inspector <span id="inspectorCount" class="badge-mini">0</span></button>
+      </div>
+    </header>
+
+    <!-- MAIN TWO-COLUMN SPLIT SCREEN -->
+    <main class="main-content">
+      <!-- LEFT COLUMN: LECTURE VIEWER -->
+      <section class="panel left-panel">
+        <div class="panel-header">
+          <div class="panel-title-group">
+            <h2>📖 Bài giảng đang mở</h2>
+            <p class="subtitle" id="lectureTitle">Day 2: Chỉ số thành công & Mức tự động hoá</p>
+          </div>
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Tìm đoạn văn bản...">
+          </div>
+        </div>
+
+        <div class="panel-body" id="lectureSectionsContainer">
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Đang tải tài liệu bài giảng...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: AI TUTOR CHAT -->
+      <section class="panel right-panel">
+        <div class="panel-header chat-header">
+          <div class="panel-title-group">
+            <h2>💬 VLearn Grounded Tutor</h2>
+            <p class="subtitle">Chặn ảo giác · Bắt buộc trích dẫn · Bảo vệ ranh giới bài học</p>
+          </div>
+
+          <!-- 3 QUICK PRESET BUTTONS (ONE-CLICK DEMO) -->
+          <div class="demo-presets">
+            <span class="presets-label">Thử nhanh:</span>
+            <button class="preset-btn btn-grounded" id="preset1" title="Luồng 1: Hỏi có căn cứ trong bài">
+              🟢 1. Trong bài
+            </button>
+            <button class="preset-btn btn-clarify" id="preset2" title="Luồng 2: Câu hỏi mơ hồ (HAX G10)">
+              🟡 2. Mơ hồ
+            </button>
+            <button class="preset-btn btn-oob" id="preset3" title="Luồng 3: Ngoài phạm vi bài giảng">
+              🔴 3. Ngoài bài
+            </button>
+          </div>
+        </div>
+
+        <!-- CHAT MESSAGES -->
+        <div class="panel-body chat-body" id="chatContainer">
+          <!-- Initial Welcome Message -->
+          <div class="chat-message assistant">
+            <div class="avatar">🤖</div>
+            <div class="bubble">
+              <div class="message-meta">
+                <span class="decision-pill grounded">✓ CÓ CĂN CỨ TRONG BÀI</span>
+                <span class="sender-name">Tutor VLearn</span>
+              </div>
+              <div class="message-text">
+                Xin chào! Mình là <strong>VLearn Grounded Tutor (Nhóm BTN)</strong>. Mình giải thích kiến thức dựa trên tài liệu bài giảng <em>Day 2: Chỉ số thành công & Mức tự động hoá</em>. Mọi câu trả lời của mình đều có trích dẫn nguồn cụ thể dạng <code>[T02-xxx]</code> để bạn dễ kiểm chứng.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SELECTED TEXT QUOTE PREVIEW (IF ANY) -->
+        <div id="selectedTextPreview" class="selected-text-banner" style="display: none;">
+          <span class="quote-icon">❝</span>
+          <span id="selectedSnippet" class="snippet-content">Đoạn văn bản đã chọn...</span>
+          <button id="btnClearSelection" class="btn-close-banner">✕</button>
+        </div>
+
+        <!-- CHAT INPUT BAR -->
+        <div class="chat-input-area">
+          <form id="chatForm">
+            <input 
+              type="text" 
+              id="queryInput" 
+              placeholder="Nhập câu hỏi bài học hoặc chọn 1 nút thử nhanh ở trên..." 
+              autocomplete="off"
+            >
+            <button type="submit" id="btnSend" class="btn-primary">
+              <span>Gửi</span>
+              <span class="send-icon">➤</span>
+            </button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <!-- CONFIG MODAL -->
+    <div id="configModal" class="modal-backdrop">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>⚙️ Cấu hình Google Gemini API</h3>
+          <button class="btn-close" id="btnCloseConfig">✕</button>
+        </div>
+        <div class="modal-body">
+          <label for="apiKeyInput" class="form-label">Gemini API Key:</label>
+          <div class="input-with-action">
+            <input type="password" id="apiKeyInput" placeholder="Dán Gemini API Key (AIzaSy...)" class="form-input">
+            <button type="button" id="btnToggleKeyVisibility" class="btn-text">👁️</button>
+          </div>
+          <p class="form-help">Lấy key miễn phí tại: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer">aistudio.google.com</a> (Key được lưu an toàn trong trình duyệt hoặc file .env).</p>
+
+          <label for="modelSelect" class="form-label">Mô hình:</label>
+          <select id="modelSelect" class="form-select">
+            <option value="gemini-1.5-flash" selected>gemini-1.5-flash (Khuyên dùng: Phản hồi nhanh & độ chính xác cao)</option>
+            <option value="gemini-2.0-flash">gemini-2.0-flash (Thế hệ mới 2.0)</option>
+            <option value="gemini-1.5-pro">gemini-1.5-pro (Suy luận sâu)</option>
+          </select>
+
+          <div id="testConnectionResult" class="test-result-box" style="display: none;"></div>
+        </div>
+        <div class="modal-footer">
+          <button id="btnTestApi" class="btn-secondary">⚡ Thử kết nối API</button>
+          <button id="btnSaveConfig" class="btn-primary">Lưu cấu hình</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI CALL INSPECTOR MODAL (PROVES REAL GEMINI CALLS) -->
+    <div id="inspectorModal" class="modal-backdrop">
+      <div class="modal-card modal-large">
+        <div class="modal-header">
+          <div>
+            <h3>🔍 AI Call Inspector — Bằng chứng gọi Gemini API thật</h3>
+            <p class="subtitle">Minh bạch toàn bộ Request, Response, Latency và Grounding Decision</p>
+          </div>
+          <button class="btn-close" id="btnCloseInspector">✕</button>
+        </div>
+        <div class="modal-body" id="inspectorContent">
+          <div class="empty-state">
+            <p>Chưa có lượt gọi API nào. Hãy gửi một câu hỏi để xem chi tiết log tại đây!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
