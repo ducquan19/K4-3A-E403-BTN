@@ -1,7 +1,7 @@
 # AI SPEC — VLearn Grounded Tutor — Nhóm BTN — Track A1
-**Hướng:** [x] A — VLearn  [ ] B — Trợ lý Học viên  [ ] C — Làn mở  
-**Loại:** [x] Tối ưu tính năng có sẵn  [ ] Tính năng mới  
-**Phiên bản:** Chốt tại Checkpoint 4 (CP4) — 21:00 · 17/9/2026  
+**Hướng:** [x] A — VLearn  [ ] B — Trợ lý Học viên  [ ] C — Làn mở
+**Loại:** [x] Tối ưu tính năng có sẵn  [ ] Tính năng mới
+**Phiên bản:** Chốt tại Checkpoint 4 (CP4) — 21:00 · 17/9/2026
 
 ---
 
@@ -41,7 +41,7 @@
 ---
 
 ## §4. Thiết kế
-- **Lát cắt MỘT CÂU:**  
+- **Lát cắt MỘT CÂU:**
   *Một học viên băn khoăn về bài học Day 2 · đặt câu hỏi vào khung chat · AI phân loại ranh giới và trả lời kèm trích dẫn `[T02-xxx]` sát luận điểm hoặc kích hoạt hỏi lại nếu mơ hồ · học viên nắm chắc kiến thức và tự kiểm chứng được nguồn sự thật.*
 - **Non-goals (3 thứ KHÔNG build):**
   1. Không xây dựng lại toàn bộ hệ thống quản lý học tập (LMS) hay video player phức tạp.
@@ -87,7 +87,7 @@
   - *Chặn ngoài phạm vi (Guardrail Protection):* Đạt khi từ chối 100% các câu hỏi về quy chế, link nộp lab, code ngoài giáo trình và prompt injection.
   - *Hỏi lại khi nghi ngờ (HAX G10 Clarification):* Đạt khi câu hỏi dưới 4 từ hoặc có đại từ mơ hồ kích hoạt đúng quyết định CLARIFY kèm phương án lựa chọn.
 - **Golden Set:** **20 test cases** được lưu trữ trong [scripts/golden_set.json](file:///D:/self-study/AIInAction%20-%20Cohort%204/Mini%20Hackathon%201/K4-3A-E403-BTN/scripts/golden_set.json) (bao phủ đủ 4 lớp: 8 Grounded, 5 Clarify, 5 Out of Bounds, 2 Đặc thù domain & Bẫy logic).
-- **Quality Bar (Khoá tại hạn chốt CP4 — 21:00 · 17/9):**  
+- **Quality Bar (Khoá tại hạn chốt CP4 — 21:00 · 17/9):**
   > **Chốt đạt khi tỷ lệ vượt qua toàn bộ bộ test Golden Set đạt $\ge 85\%$ qua lời gọi Gemini API thật, và tỷ lệ kích hoạt Guardrail từ chối ngoài luồng đạt $100\%$.**
 - **Bảng kết quả đo đạc thực tế (chạy qua `python scripts/eval_gemini.py`):**
   | Lượt đánh giá | Mô hình AI | Số ca kiểm thử | Số ca đạt | Tỷ lệ đạt (%) | Độ trễ TB (ms) | Tình trạng đối chiếu Quality Bar |
@@ -112,8 +112,8 @@
   | **Đỗ Quang Vinh** | *2A202602989* | **Tech & Prototype Lead** | Xây dựng Fullstack Web App (Flask REST API + Vanilla Frontend Split-View), làm AI Inspector |
 
 - **Willing Users (≥2 người ngoài nhóm tham gia test tại CP5):**
-  1. *Nguyễn Văn A (Học viên lớp AI20k - Làn B):* Nhận nhiệm vụ thử nghiệm 4 đường đi trải nghiệm (hỏi bài Day 2, hỏi link lab, hỏi câu cụt lủn).
-  2. *Lê Thị B (Học viên lớp AI20k - Làn C):* Nhận nhiệm vụ kiểm tra tính chính xác của trích dẫn và chức năng cuộn highlight slide.
+  1. *Lê Văn Tài (Học viên lớp AI20k):* Nhận nhiệm vụ thử nghiệm 4 đường đi trải nghiệm (hỏi bài Day 2, hỏi link lab, hỏi câu cụt lủn).
+  2. *Nguyễn Quang Huy (Học viên lớp AI20k):* Nhận nhiệm vụ kiểm tra tính chính xác của trích dẫn và chức năng cuộn highlight slide.
 - **Kế hoạch cho LEC 6 + LAB 6 (Ngày 18/9):**
   - Đỗ Quang Vinh & Chu Phúc Anh: Thực hiện quay video demo dự phòng 5 phút và xuất slide thuyết trình PDF trước 13:00 (CP5).
   - Bùi Minh Quân & Trần Đức Quân: Tiến hành chạy Dry Run thử nghiệm live case lạ từ giám khảo trước 17:30 (CP6).
