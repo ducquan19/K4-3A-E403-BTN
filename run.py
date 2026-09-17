@@ -28,7 +28,7 @@ def open_browser(port):
 if __name__ == "__main__":
     port = 5000
     print("="*60)
-    print("🎓 VLEARN GROUNDED TUTOR — NHÓM BTN (TRACK A1)")
+    print("🎓 VLEARN GROUNDED TUTOR")
     print("🚀 Đang khởi động Backend API & Frontend...")
     print(f"🔗 URL: http://localhost:{port}")
     print("="*60)

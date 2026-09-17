@@ -1,16 +1,22 @@
 // ===================================================
 // VLearn Grounded Tutor — Frontend Application Logic
 // Nhóm BTN — Track A1
+// Upgraded with Multi-tier Fallbacks & HAX G15 Feedback
 // ===================================================
 
 const API_BASE = "";
 
 // App State
 let apiKey = localStorage.getItem("vlearn_gemini_api_key") || "";
-let selectedModel = localStorage.getItem("vlearn_gemini_model") || "gemini-1.5-flash";
+let selectedModel = localStorage.getItem("vlearn_gemini_model") || "gemini-flash-latest";
+if (selectedModel === "gemini-1.5-flash") {
+  selectedModel = "gemini-flash-latest";
+  localStorage.setItem("vlearn_gemini_model", selectedModel);
+}
 let lectureSections = [];
 let selectedQuoteText = "";
 let inspectorLogs = [];
+let lastUserQuery = "";
 
 // DOM Elements
 const connectionStatus = document.getElementById("connectionStatus");
@@ -67,7 +73,7 @@ async function fetchStatus() {
     if (data.has_env_key && !apiKey) {
       updateStatus(true, "Gemini API sẵn sàng (từ .env)");
     } else if (apiKey) {
-      updateStatus(true, "Gemini API đã lưu");
+      updateStatus(true, "Gemini API đã cấu hình");
     } else {
       updateStatus(false, "Chưa có API Key");
     }
@@ -130,10 +136,7 @@ function escapeText(str) {
 window.highlightSection = function(sectionId) {
   const card = document.getElementById(`card-${sectionId}`);
   if (card) {
-    // Remove previous highlights
     document.querySelectorAll(".lecture-card.highlighted").forEach(el => el.classList.remove("highlighted"));
-    
-    // Highlight & scroll
     card.classList.add("highlighted");
     card.scrollIntoView({ behavior: "smooth", block: "center" });
 
@@ -155,11 +158,10 @@ async function handleSendMessage(customText) {
   const question = (customText || queryInput.value || "").trim();
   if (!question) return;
 
-  // Append user message
+  lastUserQuery = question;
   appendUserMessage(question);
   queryInput.value = "";
 
-  // Show typing indicator
   const typingId = appendTypingIndicator();
 
   const payload = {
@@ -170,7 +172,6 @@ async function handleSendMessage(customText) {
   };
 
   try {
-    const startTime = performance.now();
     const res = await fetch(`${API_BASE}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -185,8 +186,7 @@ async function handleSendMessage(customText) {
       return;
     }
 
-    // Success response
-    appendAssistantMessage(data);
+    appendAssistantMessage(data, question);
 
     // Save to inspector logs
     inspectorLogs.unshift({
@@ -196,7 +196,6 @@ async function handleSendMessage(customText) {
     });
     inspectorCount.innerText = inspectorLogs.length;
 
-    // Clear quote selection banner
     clearQuote();
 
   } catch (err) {
@@ -242,7 +241,8 @@ function removeTypingIndicator(id) {
   if (el) el.remove();
 }
 
-function appendAssistantMessage(data) {
+function appendAssistantMessage(data, userQuestion) {
+  const msgId = "msg-" + Date.now();
   const decision = (data.decision || "GROUNDED").toUpperCase();
   let decisionClass = "grounded";
   let decisionLabel = "✓ CÓ CĂN CỨ TRONG BÀI";
@@ -253,6 +253,12 @@ function appendAssistantMessage(data) {
   } else if (decision === "OUT_OF_BOUNDS") {
     decisionClass = "out_of_bounds";
     decisionLabel = "⛔ NGOÀI PHẠM VI BÀI HỌC";
+  }
+
+  // Fallback badge if local fallback was used
+  let fallbackHtml = "";
+  if (data.fallback_used) {
+    fallbackHtml = `<span class="fallback-pill" title="Kích hoạt tự động khi lỗi mạng hoặc quota để bảo vệ độ tin cậy của demo">⚡ DỰ PHÒNG NỘI BỘ (FALLBACK)</span>`;
   }
 
   // Citations Pills
@@ -287,11 +293,13 @@ function appendAssistantMessage(data) {
 
   const msg = document.createElement("div");
   msg.className = "chat-message assistant";
+  msg.id = msgId;
   msg.innerHTML = `
     <div class="avatar">🤖</div>
     <div class="bubble">
       <div class="message-meta">
         <span class="decision-pill ${decisionClass}">${decisionLabel}</span>
+        ${fallbackHtml}
         <span class="sender-name">Tutor VLearn</span>
       </div>
       <div class="message-text">
@@ -300,10 +308,18 @@ function appendAssistantMessage(data) {
       ${citationsHtml}
       ${clarifyHtml}
       <div class="message-footer">
-        <span>⚡ Gemini API: ${data.latency_ms || 0}ms (${data.model_used || "gemini-1.5-flash"})</span>
-        <div>
-          <button class="btn-feedback" title="Hữu ích" onclick="this.innerText='👍 Đã gửi!'">👍</button>
-          <button class="btn-feedback" title="Chưa đúng" onclick="this.innerText='👎 Đã ghi nhận!'">👎</button>
+        <span>⚡ ${data.latency_ms || 0}ms (${data.model_used || "gemini-1.5-flash"})</span>
+        <div class="feedback-container" id="feedback-${msgId}">
+          <button class="btn-feedback" title="Hữu ích (HAX G15)" onclick="submitPositiveFeedback('${msgId}')">👍</button>
+          <button class="btn-feedback" title="Chưa đúng (HAX G15)" onclick="showGranularFeedbackOptions('${msgId}')">👎</button>
+        </div>
+      </div>
+      <div class="feedback-options" id="feedback-opts-${msgId}" style="display: none;">
+        <span>Phản hồi chi tiết (HAX G15) — Chưa đúng ở chỗ nào?</span>
+        <div class="feedback-tags">
+          <button class="feedback-tag" onclick="submitGranularFeedback('${msgId}', 'Sai trích dẫn')">📌 Sai trích dẫn</button>
+          <button class="feedback-tag" onclick="submitGranularFeedback('${msgId}', 'Giải thích chưa rõ')">📝 Chưa rõ ý</button>
+          <button class="feedback-tag" onclick="submitGranularFeedback('${msgId}', 'Ngoài phạm vi bài')">⛔ Ngoài bài giảng</button>
         </div>
       </div>
     </div>
@@ -317,6 +333,38 @@ function appendAssistantMessage(data) {
   }
 }
 
+// Granular Feedback handlers (HAX G15)
+window.submitPositiveFeedback = function(msgId) {
+  const container = document.getElementById(`feedback-${msgId}`);
+  if (container) {
+    container.innerHTML = `<span style="color:#34d399; font-size:11px;">👍 Cảm ơn bạn!</span>`;
+  }
+};
+
+window.showGranularFeedbackOptions = function(msgId) {
+  const opts = document.getElementById(`feedback-opts-${msgId}`);
+  if (opts) {
+    opts.style.display = (opts.style.display === "none") ? "flex" : "none";
+  }
+};
+
+window.submitGranularFeedback = function(msgId, reason) {
+  const opts = document.getElementById(`feedback-opts-${msgId}`);
+  const container = document.getElementById(`feedback-${msgId}`);
+  if (opts) opts.style.display = "none";
+  if (container) {
+    container.innerHTML = `<span style="color:#fde047; font-size:11px;">✓ Đã ghi nhận: "${reason}" (HAX G15)</span>`;
+  }
+  // Record in inspector logs
+  inspectorLogs.unshift({
+    timestamp: new Date().toLocaleTimeString(),
+    type: "USER_FEEDBACK_G15",
+    message_id: msgId,
+    negative_reason: reason
+  });
+  inspectorCount.innerText = inspectorLogs.length;
+};
+
 function appendErrorMessage(errText) {
   const msg = document.createElement("div");
   msg.className = "chat-message assistant";
@@ -325,12 +373,14 @@ function appendErrorMessage(errText) {
     <div class="bubble" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1);">
       <div class="message-meta">
         <span class="decision-pill out_of_bounds">LỖI XỬ LÝ</span>
+        <span class="sender-name">Hệ thống</span>
       </div>
       <div class="message-text" style="color: #fca5a5;">
         ${escapeHtml(errText)}
       </div>
-      <div class="message-footer">
-        <span style="color: #fca5a5;">Vui lòng kiểm tra lại API Key ở nút ⚙️ Cấu hình API.</span>
+      <div style="display: flex; gap: 8px; margin-top: 6px;">
+        <button class="btn-retry" onclick="retryLastQuery()">🔄 Thử lại</button>
+        <button class="btn-secondary" style="padding: 3px 8px; font-size: 11px;" onclick="btnOpenConfig.click()">⚙️ Đổi API Key</button>
       </div>
     </div>
   `;
@@ -338,9 +388,14 @@ function appendErrorMessage(errText) {
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-// 5. Preset Buttons
+window.retryLastQuery = function() {
+  if (lastUserQuery) {
+    handleSendMessage(lastUserQuery);
+  }
+};
+
+// 5. Preset Buttons & Events
 function setupEventListeners() {
-  // Presets
   preset1.addEventListener("click", () => {
     handleSendMessage("Quick win trong ma trận tác động - nỗ lực có ý nghĩa gì và tại sao cần ưu tiên?");
   });
@@ -353,13 +408,11 @@ function setupEventListeners() {
     handleSendMessage("Thầy ơi nộp bài tập lab ở link nào vậy ạ?");
   });
 
-  // Chat Form
   chatForm.addEventListener("submit", (e) => {
     e.preventDefault();
     handleSendMessage();
   });
 
-  // Search in Lecture
   searchInput.addEventListener("input", (e) => {
     const q = e.target.value.toLowerCase().trim();
     if (!q) {
@@ -372,10 +425,8 @@ function setupEventListeners() {
     renderLectureSections(filtered);
   });
 
-  // Clear quote
   btnClearSelection.addEventListener("click", clearQuote);
 
-  // Config Modal
   btnOpenConfig.addEventListener("click", () => {
     configModal.classList.add("open");
     testResultBox.style.display = "none";
@@ -424,7 +475,6 @@ function setupEventListeners() {
     }
   });
 
-  // Inspector Modal
   btnOpenInspector.addEventListener("click", () => {
     renderInspectorLogs();
     inspectorModal.classList.add("open");
@@ -449,35 +499,47 @@ function renderInspectorLogs() {
     return;
   }
 
-  inspectorContent.innerHTML = inspectorLogs.map((log, idx) => `
-    <div class="inspector-log-item">
-      <div class="inspector-grid">
-        <div class="metric-box">
-          <div class="metric-title">Thời gian</div>
-          <div class="metric-value">${log.timestamp}</div>
+  inspectorContent.innerHTML = inspectorLogs.map((log, idx) => {
+    if (log.type === "USER_FEEDBACK_G15") {
+      return `
+        <div class="inspector-log-item" style="border-color: rgba(245, 158, 11, 0.4);">
+          <div style="color: #fde047; font-weight:700; margin-bottom:4px;">📊 HAX G15 USER FEEDBACK</div>
+          <div><strong>Thời gian:</strong> ${log.timestamp} | <strong>Lý do:</strong> "${log.negative_reason}"</div>
         </div>
-        <div class="metric-box">
-          <div class="metric-title">Quyết định</div>
-          <div class="metric-value" style="color:#34d399;">${log.response.decision || "N/A"}</div>
+      `;
+    }
+    const isFallback = log.response.fallback_used;
+    return `
+      <div class="inspector-log-item">
+        <div class="inspector-grid">
+          <div class="metric-box">
+            <div class="metric-title">Thời gian</div>
+            <div class="metric-value">${log.timestamp}</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-title">Quyết định</div>
+            <div class="metric-value" style="color:#34d399;">${log.response.decision || "N/A"}</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-title">Độ trễ API</div>
+            <div class="metric-value">${log.response.latency_ms || 0} ms</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-title">Cơ chế</div>
+            <div class="metric-value" style="color:${isFallback ? '#fde047' : '#38bdf8'}; font-size:11px;">
+              ${isFallback ? "Local Fallback" : "Live Gemini"}
+            </div>
+          </div>
         </div>
-        <div class="metric-box">
-          <div class="metric-title">Độ trễ API</div>
-          <div class="metric-value">${log.response.latency_ms || 0} ms</div>
+        <div style="margin-bottom:6px; color:var(--text-muted); font-size:11px;">
+          <strong>Câu hỏi:</strong> "${escapeHtml(log.question)}"
         </div>
-        <div class="metric-box">
-          <div class="metric-title">Model</div>
-          <div class="metric-value">${log.response.model_used || "gemini-1.5-flash"}</div>
-        </div>
+        <div class="json-dump">${escapeHtml(JSON.stringify(log.response, null, 2))}</div>
       </div>
-      <div style="margin-bottom:6px; color:var(--text-muted); font-size:11px;">
-        <strong>Câu hỏi:</strong> "${escapeHtml(log.question)}"
-      </div>
-      <div class="json-dump">${escapeHtml(JSON.stringify(log.response, null, 2))}</div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
-// Simple text escape & formatting
 function escapeHtml(text) {
   const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
   return (text || "").replace(/[&<>"']/g, m => map[m]);
@@ -486,11 +548,8 @@ function escapeHtml(text) {
 function formatMarkdown(text) {
   if (!text) return "";
   let formatted = escapeHtml(text);
-  // Bold
   formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  // Code
   formatted = formatted.replace(/`(.*?)`/g, '<code>$1</code>');
-  // Paragraphs
   formatted = formatted.split("\n\n").map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
   return formatted;
 }

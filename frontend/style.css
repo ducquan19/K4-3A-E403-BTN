@@ -455,6 +455,7 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .sender-name {
@@ -487,6 +488,16 @@ button {
   background: var(--status-red-bg);
   color: #f87171;
   border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.fallback-pill {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fde047;
 }
 
 .message-text {
@@ -569,6 +580,13 @@ button {
   color: var(--text-dim);
 }
 
+/* Granular Feedback HAX G15 */
+.feedback-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .btn-feedback {
   background: none;
   font-size: 12px;
@@ -579,6 +597,54 @@ button {
 .btn-feedback:hover {
   color: var(--text-main);
   background: rgba(255, 255, 255, 0.06);
+}
+
+.feedback-options {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: #0b0f19;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: message-appear 0.2s ease-out;
+}
+.feedback-options span {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+.feedback-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.feedback-tag {
+  background: #1e293b;
+  border: 1px solid #475569;
+  color: #cbd5e1;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.feedback-tag:hover {
+  border-color: var(--accent-blue);
+  color: #93c5fd;
+}
+
+.btn-retry {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.btn-retry:hover {
+  background: rgba(239, 68, 68, 0.4);
 }
 
 /* Selected text banner */
