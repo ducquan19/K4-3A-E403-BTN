@@ -12,7 +12,7 @@
 | Họ và Tên | Mã Học Viên | Vai trò chính | Phần việc đảm nhiệm cụ thể trong dự án |
 |---|---|---|---|
 | **Chu Phúc Anh** | *2A202602370* | **Product Lead (Đội trưởng)** | Phụ trách Canvas CP1, AI Spec, áp dụng nguyên tắc HAX/PAIR, điều phối nhóm và nộp bài các Checkpoint |
-| **Trần Đức Quân** | *2A202602922* | **Data & Eval Lead** | Khai thác 13.494 chatlog thật, chọn bằng chứng, xây dựng bộ test Golden Set 10+ cases và đo đạc kết quả CP3 |
+| **Trần Đức Quân** | *2A202602922* | **Data & Eval Lead** | Khai thác 13.494 chatlog thật, chọn bằng chứng, xây dựng bộ test Golden Set 20 cases (4 lớp) và đo đạc kết quả CP3 |
 | **Bùi Minh Quân** | *2A202602958* | **AI & Prompt Engineer** | Thiết kế Grounding Guardrail Prompt, phân tầng 4 lớp chỗ khó, tích hợp kết nối Google Gemini API |
 | **Đỗ Quang Vinh** | *2A202602989* | **Tech & Prototype Lead** | Xây dựng Full-Stack App (Backend Flask + Frontend Web LMS Split-Screen), tích hợp AI Inspector và quay Video Demo |
 
@@ -48,7 +48,7 @@
    - 🟡 **2. Mơ hồ (Clarify - HAX G10):** Hỏi lại 1 câu kèm các lựa chọn bấm nhanh.
    - 🔴 **3. Ngoài bài (Out of Bounds):** Từ chối giải thích bài học, hướng dẫn sang kênh Discord của TA.
 5. **Bộ đo đạc thực nghiệm tự động (`scripts/eval_gemini.py`):**
-   - Chạy kiểm thử 10 ca từ chatlog thật qua Gemini API và xuất báo cáo đo đạc số liệu cho Checkpoint 3.
+   - Chạy kiểm thử 20 ca từ chatlog thật (4 lớp) qua Gemini API và xuất báo cáo đo đạc số liệu cho Checkpoint 3.
 
 ---
 
@@ -85,7 +85,7 @@ python scripts/test_api.py
 ```bash
 python scripts/eval_gemini.py
 ```
-Hệ thống sẽ chạy qua 10 ca kiểm thử thực tế từ chatlog và tự động sinh 2 file báo cáo bên trong thư mục `scripts/`:
+Hệ thống sẽ chạy qua 20 ca kiểm thử thực tế (4 lớp chỗ khó) từ chatlog và tự động sinh 2 file báo cáo bên trong thư mục `scripts/`:
 - `scripts/eval_results.json`: Chi tiết từng lượt gọi AI, thời gian phản hồi, trích dẫn.
 - `scripts/eval_report.md`: Bảng tổng kết số đo và tỷ lệ đạt chuẩn (Pass Rate %).
 
@@ -105,7 +105,7 @@ K4-3A-E403-BTN/
 ├── scripts/               ← THƯ MỤC CHỨA CÁC SCRIPT KIỂM THỬ & ĐO ĐẠC
 │   ├── test_api.py        ← Script CLI kiểm tra nhanh Gemini API
 │   ├── eval_gemini.py     ← Script chạy bộ đo đạc Golden Set (CP3 / R4)
-│   └── golden_set.json    ← Bộ 10 ca kiểm thử trích từ chatlog thật
+│   └── golden_set.json    ← Bộ 20 ca kiểm thử 4 lớp trích từ chatlog thật
 │
 ├── backend/               ← BACKEND (Python Flask REST API)
 │   ├── app.py             ← Máy chủ API phục vụ /api/chat, /api/lecture
