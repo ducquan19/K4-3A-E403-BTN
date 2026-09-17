@@ -8,9 +8,9 @@ const API_BASE = "";
 
 // App State
 let apiKey = localStorage.getItem("vlearn_gemini_api_key") || "";
-let selectedModel = localStorage.getItem("vlearn_gemini_model") || "gemini-flash-latest";
-if (selectedModel === "gemini-1.5-flash") {
-  selectedModel = "gemini-flash-latest";
+let selectedModel = localStorage.getItem("vlearn_gemini_model") || "gemini-flash-lite-latest";
+if (selectedModel === "gemini-1.5-flash" || selectedModel === "gemini-3.6-flash" || selectedModel === "gemini-2.5-flash") {
+  selectedModel = "gemini-flash-lite-latest";
   localStorage.setItem("vlearn_gemini_model", selectedModel);
 }
 let lectureSections = [];

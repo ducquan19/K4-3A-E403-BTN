@@ -11,6 +11,11 @@ import webbrowser
 import threading
 import time
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 backend_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "backend")
 sys.path.insert(0, backend_dir)
 
@@ -28,7 +33,7 @@ def open_browser(port):
 if __name__ == "__main__":
     port = 5000
     print("="*60)
-    print("🎓 VLEARN GROUNDED TUTOR")
+    print("🎓 VLEARN GROUNDED TUTOR — NHÓM BTN (TRACK A1)")
     print("🚀 Đang khởi động Backend API & Frontend...")
     print(f"🔗 URL: http://localhost:{port}")
     print("="*60)

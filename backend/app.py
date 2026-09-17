@@ -117,36 +117,6 @@ def get_lecture():
                 "content": " ".join(current_text)
             })
 
-    # Fallback to key highlights if parsing produces empty
-    if not sections:
-        sections = [
-            {
-                "id": "T02-003",
-                "title": "Ma trận Tác động - Nỗ lực trong quy trình công việc",
-                "content": "Bạn này làm rất chỉn chu cho một quy trình làm nội dung TikTok, rất là kỹ. Nỗ lực thấp mà impact cao — win của bạn thì có mấy cái, và có những công việc mà AI đang là thế mạnh."
-            },
-            {
-                "id": "T02-009",
-                "title": "Từ Quick Win đến Phát biểu bài toán",
-                "content": "Đây chỉ là một ví dụ thôi, mọi người có thể tham khảo bài của các bạn khác. Nhưng đấy là một framework rất đơn giản để các bạn ngay lập tức phân loại được các việc quan trọng và có thể ưu tiên làm."
-            },
-            {
-                "id": "T02-010",
-                "title": "Tầm quan trọng của Quick Win trong AI Product",
-                "content": "Bài tập ngắn này để mọi người thử việc phân loại, tìm ra cái việc đáng để làm trước. Trong một loạt đề bài, hãy cố gắng tìm ra quick win — quick win rất quan trọng. Làm gì cũng thế, có một thành công nhỏ sẽ khiến chúng ta có nhiều động lực hơn để làm tiếp. Đặc biệt trong bối cảnh doanh nghiệp: những quick win sẽ khiến mọi người cùng có niềm tin và tiếp tục đi lên. Nên khi xây dựng một cái gì, cố gắng chọn ra những thứ có xác suất win cao nhất để ưu tiên làm trước."
-            },
-            {
-                "id": "T02-011",
-                "title": "Phỏng vấn doanh nghiệp và đo lường Impact",
-                "content": "Đây là ví dụ các bạn làm với cá nhân, nhưng trong bối cảnh rộng hơn, bạn hoàn toàn có thể áp dụng framework đơn giản như vậy cho tất cả các công việc khác. Ví dụ bạn được đưa vào doanh nghiệp và muốn đưa AI vào quy trình — bạn đi phỏng vấn leader các bộ phận, CEO, khảo sát xem nếu giải được thì mang lại hiệu quả, impact bao nhiêu, và áng chừng làm mất bao lâu."
-            },
-            {
-                "id": "T02-013",
-                "title": "Chia nhỏ quy trình và khoanh vùng ưu tiên",
-                "content": "Việc đầu tiên là chúng ta cứ xây dựng một cái list, phân loại nó qua ma trận tác động và nỗ lực, sau đấy đánh giá và đặt ưu tiên — thế là khoanh vùng được cái ưu tiên làm trước. Thậm chí chỉ trong một dự án hoặc một đầu việc thôi, bạn cũng có thể chia nhỏ ra các bước và đặt lên ma trận."
-            }
-        ]
-
     return jsonify({
         "title": "Day 2: Chỉ số thành công & Mức tự động hoá",
         "sections": sections

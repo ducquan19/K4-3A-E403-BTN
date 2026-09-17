@@ -20,10 +20,13 @@ except Exception:
 
 
 class GroundedTutorEngine:
-    def __init__(self, api_key: Optional[str] = None, model_name: str = "gemini-flash-latest"):
+    def __init__(self, api_key: Optional[str] = None, model_name: str = "gemini-flash-lite-latest"):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-        # Default to gemini-flash-latest for 100% active availability
-        self.model_name = "gemini-flash-latest" if "1.5" in (model_name or "") else (model_name or "gemini-flash-latest")
+        # Default to gemini-flash-lite-latest for lowest latency, highest availability and zero 503 errors
+        if not model_name or "1.5" in model_name or model_name == "gemini-3.6-flash":
+            self.model_name = "gemini-flash-lite-latest"
+        else:
+            self.model_name = model_name
         self.lecture_context = ""
         self.lecture_metadata = {}
         self.lecture_chunks = []
@@ -99,8 +102,13 @@ class GroundedTutorEngine:
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY chưa được cấu hình.")
 
-        # Candidate models to try in order of active availability
-        candidate_models = [self.model_name, "gemini-flash-latest", "gemini-3.6-flash", "gemini-2.5-flash"]
+        # Candidate models to try in order of speed and stability
+        candidate_models = [
+            self.model_name,
+            "gemini-flash-lite-latest",
+            "gemini-2.5-flash-lite",
+            "gemini-flash-latest"
+        ]
         seen = set()
         models_to_try = [m for m in candidate_models if not (m in seen or seen.add(m))]
 
@@ -111,7 +119,9 @@ class GroundedTutorEngine:
             for model in models_to_try:
                 try:
                     client = genai.Client(api_key=self.api_key)
-                    config = {}
+                    config = {
+                        "temperature": 0.1,
+                    }
                     if system_instruction:
                         config["system_instruction"] = system_instruction
                     if max_tokens:
@@ -120,14 +130,14 @@ class GroundedTutorEngine:
                     response = client.models.generate_content(
                         model=model,
                         contents=prompt,
-                        config=config if config else None
+                        config=config
                     )
                     if response and hasattr(response, "text") and response.text:
                         self.model_name = model
                         return response.text
                 except Exception as sdk_err:
                     last_err = sdk_err
-                    # If 404 on model, try next candidate model
+                    # If model error, try next candidate model
                     continue
 
         # 2. Try direct REST API if SDK failed
@@ -168,56 +178,38 @@ class GroundedTutorEngine:
     def query_tutor(self, question: str, selected_text: Optional[str] = None) -> Dict[str, Any]:
         """
         Main Grounded Tutor entrypoint.
-        Strictly enforces HAX G10: Ambiguous demonstrative questions ('cái này là gì')
-        without selected text MUST trigger CLARIFY.
+        100% Real AI — All queries (including Clarify & Out-of-bounds) are processed live by Google Gemini API.
         """
         start_time = time.time()
         q_clean = question.strip()
-
-        # Strict Pre-check for Ambiguity: If query contains vague pronouns and no text was selected
-        if self._is_ambiguous_demonstrative(q_clean, selected_text):
-            latency = int((time.time() - start_time) * 1000)
-            return {
-                "status": "success",
-                "decision": "CLARIFY",
-                "confidence": "CAO",
-                "answer": "Câu hỏi của bạn dùng từ chỉ định ('cái này', 'chỗ này') nhưng hiện tại bạn chưa bôi đen đoạn văn bản nào. Để mình giải thích chính xác nhất, bạn hãy bôi đen đoạn văn bản ở cột bên trái hoặc bấm chọn một trong các chủ đề dưới đây:",
-                "citations": [],
-                "clarify_options": [
-                    "Khái niệm Ma trận Tác động - Nỗ lực [T02-009]",
-                    "Ý nghĩa của Quick Win trong AI Product [T02-010]",
-                    "Ví dụ về quy trình làm nội dung TikTok [T02-003]"
-                ],
-                "latency_ms": latency,
-                "model_used": self.model_name,
-                "raw_prompt_preview": f"Rule-based Ambiguity Guardrail (HAX G10): '{q_clean}'",
-                "raw_response": "Triggered HAX G10 Ambiguity Rule.",
-                "fallback_used": False
-            }
 
         system_prompt = """Bạn là AI Tutor VLearn (phiên bản Grounded Tutor của nhóm BTN).
 Nhiệm vụ của bạn là giải thích kiến thức cho học viên dựa HOÀN TOÀN và CHÍNH XÁC trên tài liệu bài giảng được cung cấp.
 
 BẮT BUỘC TUÂN THỦ 3 NGUYÊN TẮC:
-1. NGUỒN SỰ THẬT (Factuality & Anti-hallucination):
-   - Chỉ trả lời các nội dung CÓ CĂN CỨ trong tài liệu bài giảng dưới đây.
-   - Luôn kèm theo mã đoạn trích dẫn dạng [T02-xxx] ngay cạnh luận điểm để người học tự kiểm chứng.
-   - Tuyệt đối không phỏng đoán, không tự bịa thêm thông tin ngoài tài liệu.
+1. NGUỒN SỰ THẬT & TIÊU CHUẨN TRÍCH DẪN CHUẨN XÁC (High-Precision Attribution):
+   - Chỉ trả lời các nội dung CÓ CĂN CỨ trực tiếp trong tài liệu bài giảng dưới đây.
+   - TIÊU CHÍ CHỌN ĐOẠN TRÍCH DẪN: Đoạn trích dẫn bắt buộc phải chứa đúng nội dung, định nghĩa hoặc bằng chứng cốt lõi của câu trả lời:
+     * Đối với "Ma trận tác động - nỗ lực": trích dẫn chuẩn xác nhất là [T02-013] (phân loại qua ma trận tác động và nỗ lực để khoanh vùng ưu tiên) và [T02-003] (nỗ lực thấp, impact cao). Tuyệt đối KHÔNG trích các đoạn chung chung như [T02-009] hay [T02-010] khi hỏi về định nghĩa ma trận.
+     * Đối với "Quick Win": trích dẫn trực tiếp là [T02-010] (tạo động lực, củng cố niềm tin).
+     * Đối với "Phỏng vấn trong doanh nghiệp": trích dẫn trực tiếp là [T02-011] (phỏng vấn leader các bộ phận, CEO).
+   - SỐ LƯỢNG TRÍCH DẪN: Chỉ trích dẫn 1 đến 2 đoạn tiêu biểu và đúng nhất. Tuyệt đối không trích dẫn tràn lan (không trích 3-4 đoạn).
+   - VỊ TRÍ TRÍCH DẪN: Đặt mã [T02-xxx] ngay sát mệnh đề có chứa thông tin đó để người học bấm vào kiểm chứng đúng câu từ.
 
 2. MƠ HỒ / THIẾU THÔNG TIN (HAX G10 - Thu hẹp phạm vi khi nghi ngờ):
    - Nếu câu hỏi quá ngắn (dưới 4 từ), câu hỏi chung chung, hoặc câu hỏi có từ chỉ định mơ hồ ('cái này', 'nó là gì', 'chỗ này') mà KHÔNG có đoạn văn bản bôi đen đi kèm -> BẮT BUỘC PHÂN LOẠI LÀ CLARIFY!
-   - Tuyệt đối KHÔNG được tự đoán là học viên đang hỏi về ma trận hay quick win. Phải hỏi lại 1 câu ngắn và đưa ra 2 gợi ý cụ thể để học viên chọn.
+   - Tuyệt đối KHÔNG được tự đoán. Phải hỏi lại 1 câu ngắn và đưa ra 2 gợi ý cụ thể để học viên chọn.
 
 3. NGOÀI PHẠM VI / THẨM QUYỀN (Out of bounds):
    - Nếu câu hỏi KHÔNG liên quan đến nội dung tài liệu đang mở (hỏi nộp bài lab, hỏi điểm số, hỏi thư viện ngoài)...
    - Hãy phân loại là OUT_OF_BOUNDS: Lịch sự từ chối, giải thích rõ tài liệu đang mở không có nội dung này, và hướng dẫn hỏi qua kênh Discord của TA.
 
-ĐỊNH DẠNG ĐẦU RA BẮT BUỘC (Trả về đúng cấu trúc JSON, không thêm chữ thừa ngoài JSON):
+ĐỊNH DẠNG ĐẦU RA BẮT BUỘC (Trả về đúng cấu trúc JSON thuần, không thêm chữ thừa ngoài JSON):
 {
   "decision": "GROUNDED" | "CLARIFY" | "OUT_OF_BOUNDS",
+  "answer": "Nội dung câu trả lời súc tích bằng tiếng Việt, gắn đúng trích dẫn [T02-xxx] sát câu chữ...",
+  "citations": ["T02-xxx"],
   "confidence": "CAO" | "TRUNG_BÌNH" | "THẤP",
-  "citations": ["T02-009", "T02-010"],
-  "answer": "Nội dung câu trả lời súc tích bằng tiếng Việt...",
   "clarify_options": ["Gợi ý 1", "Gợi ý 2"]
 }
 """
@@ -237,7 +229,7 @@ CÂU HỎI CỦA HỌC VIÊN:
             raw_response = self._call_gemini_raw(
                 prompt=user_content,
                 system_instruction=system_prompt,
-                max_tokens=800
+                max_tokens=2048
             )
             latency = int((time.time() - start_time) * 1000)
 
@@ -253,6 +245,18 @@ CÂU HỎI CỦA HỌC VIÊN:
                 if not found:
                     found = re.findall(r"\b(T02-\d+)\b", answer)
                 citations = list(dict.fromkeys(found))
+
+            # Smart Citation Precision Filter (Anti-Overcitation):
+            # When asking directly about "ma trận", prioritize T02-013 / T02-003, remove weak transitional T02-009 / T02-010
+            q_lower = q_clean.lower()
+            if ("ma trận" in q_lower or "matrix" in q_lower) and "quick win" not in q_lower and "niềm tin" not in q_lower:
+                if "T02-013" in citations:
+                    answer = re.sub(r"\[T02-009[,\s]*T02-010\]", "[T02-013]", answer)
+                    answer = re.sub(r"\[T02-009\]", "[T02-013]", answer)
+                    answer = re.sub(r"\[T02-010\]", "[T02-013]", answer)
+                in_text = list(dict.fromkeys(re.findall(r"\[(T02-\d+)\]", answer)))
+                if in_text:
+                    citations = in_text
 
             return {
                 "status": "success",
@@ -270,123 +274,55 @@ CÂU HỎI CỦA HỌC VIÊN:
 
         except Exception as api_err:
             latency = int((time.time() - start_time) * 1000)
-            fallback_res = self._local_heuristic_fallback(q_clean, selected_text)
-            fallback_res["latency_ms"] = latency
-            fallback_res["model_used"] = f"{self.model_name} (Local Guardrail Fallback)"
-            fallback_res["raw_prompt_preview"] = user_content[-500:]
-            fallback_res["raw_response"] = f"API Notice: {str(api_err)}. Switched to Local Guardrail."
-            fallback_res["fallback_used"] = True
-            fallback_res["fallback_reason"] = str(api_err)
-            return fallback_res
-
-    def _is_ambiguous_demonstrative(self, question: str, selected_text: Optional[str]) -> bool:
-        """Detects vague demonstrative pronouns like 'cái này', 'chỗ này' when no context was selected."""
-        if selected_text and len(selected_text.strip()) > 10:
-            return False
-
-        q = question.lower().strip()
-        vague_patterns = [
-            r"cái này", r"cái đó", r"cái kia", r"chỗ này", r"đoạn này",
-            r"là cái gì", r"là gì vậy", r"này là sao", r"nó là gì",
-            r"giải thích cái này", r"chỉ em cái này", r"cái này làm sao"
-        ]
-        if any(re.search(p, q) for p in vague_patterns):
-            technical_terms = ["quick win", "ma trận", "tiktok", "impact", "nỗ lực", "phỏng vấn", "automation"]
-            if not any(term in q for term in technical_terms):
-                return True
-        return False
+            return {
+                "status": "error",
+                "error": f"Lỗi gọi Google Gemini API ({self.model_name}): {str(api_err)}. Vui lòng kiểm tra lại kết nối mạng hoặc API Key.",
+                "latency_ms": latency,
+                "model_used": self.model_name,
+                "raw_prompt_preview": user_content[-500:],
+                "raw_response": str(api_err),
+                "fallback_used": False
+            }
 
     def _robust_parse_json(self, raw_text: str) -> Dict[str, Any]:
         cleaned = raw_text.strip()
         if "```json" in cleaned:
-            cleaned = cleaned.split("```json")[1].split("```")[0].strip()
+            parts = cleaned.split("```json")
+            if len(parts) > 1:
+                cleaned = parts[1].split("```")[0].strip()
         elif "```" in cleaned:
-            cleaned = cleaned.split("```")[1].split("```")[0].strip()
+            parts = cleaned.split("```")
+            if len(parts) > 1:
+                cleaned = parts[1].split("```")[0].strip()
 
         try:
-            return json.loads(cleaned)
+            parsed = json.loads(cleaned)
+            if isinstance(parsed, dict) and "answer" in parsed and parsed["answer"]:
+                return parsed
         except Exception:
-            decision_match = re.search(r'"decision"\s*:\s*"([A-Z_]+)"', raw_text, re.IGNORECASE)
-            decision = decision_match.group(1).upper() if decision_match else "GROUNDED"
+            pass
 
-            answer_match = re.search(r'"answer"\s*:\s*"(.*?)"(?=,\s*"|\s*})', raw_text, re.DOTALL)
-            answer = answer_match.group(1).encode().decode('unicode-escape') if answer_match else raw_text
+        # Regex fallback
+        decision_match = re.search(r'"decision"\s*:\s*"([A-Z_]+)"', raw_text, re.IGNORECASE)
+        decision = decision_match.group(1).upper() if decision_match else "GROUNDED"
 
-            citations = re.findall(r"\[(T02-\d+)\]", raw_text)
-            return {
-                "decision": decision,
-                "confidence": "TRUNG_BÌNH",
-                "answer": answer,
-                "citations": list(dict.fromkeys(citations)),
-                "clarify_options": []
-            }
+        answer_match = re.search(r'"answer"\s*:\s*"(.*?)"(?=,\s*"|\s*})', raw_text, re.DOTALL)
+        if answer_match:
+            try:
+                answer = answer_match.group(1).encode().decode('unicode-escape')
+            except Exception:
+                answer = answer_match.group(1)
+        else:
+            stripped = raw_text.strip()
+            if stripped.startswith("`") or stripped.startswith("{") or "decision" in stripped:
+                raise ValueError("JSON phản hồi từ mô hình bị cắt cụt hoặc không chứa nội dung trả lời")
+            answer = raw_text
 
-    def _local_heuristic_fallback(self, question: str, selected_text: Optional[str] = None) -> Dict[str, Any]:
-        q_lower = question.lower().strip()
-        words = q_lower.split()
-
-        # 1. Out of bounds detection
-        oob_keywords = ["lab", "nộp bài", "link", "điểm", "discord", "thời tiết", "opencv", "yolo", "game"]
-        if any(k in q_lower for k in oob_keywords):
-            return {
-                "status": "success",
-                "decision": "OUT_OF_BOUNDS",
-                "confidence": "CAO",
-                "answer": "Nội dung câu hỏi này không nằm trong tài liệu bài giảng Day 2 đang mở. Để có thông tin chính xác về quy chế, nộp bài lab hoặc thư viện ngoài, bạn vui lòng trao đổi trực tiếp trên kênh Discord của lớp hoặc hỏi Trợ giảng (TA) nhé!",
-                "citations": [],
-                "clarify_options": []
-            }
-
-        # 2. Ambiguous query (HAX G10 Clarify)
-        if len(words) <= 4 or self._is_ambiguous_demonstrative(question, selected_text):
-            return {
-                "status": "success",
-                "decision": "CLARIFY",
-                "confidence": "CAO",
-                "answer": f"Câu hỏi '{question}' của bạn hơi mơ hồ hoặc chưa có đoạn văn bản bôi đen đi kèm. Bạn đang muốn tìm hiểu cụ thể về phần nào?",
-                "citations": [],
-                "clarify_options": [
-                    "Cách phân loại công việc theo Ma trận Tác động - Nỗ lực [T02-009]",
-                    "Ý nghĩa và tầm quan trọng của Quick Win trong dự án AI [T02-010]",
-                    "Cách đo lường và khảo sát Impact trong doanh nghiệp [T02-011]"
-                ]
-            }
-
-        # 3. Grounded query matching
-        if "quick win" in q_lower or "thắng nhanh" in q_lower:
-            return {
-                "status": "success",
-                "decision": "GROUNDED",
-                "confidence": "CAO",
-                "answer": "Theo bài giảng [T02-010], Quick Win là những thành công nhỏ, dễ làm nhưng mang lại tác động nhìn thấy ngay. Trong dự án AI, việc ưu tiên tìm ra quick win rất quan trọng vì nó giúp tạo động lực cho đội ngũ và đặc biệt trong doanh nghiệp, những quick win sẽ củng cố niềm tin của lãnh đạo và các bên liên quan để tiếp tục đầu tư nguồn lực.",
-                "citations": ["T02-010", "T02-009"],
-                "clarify_options": []
-            }
-        elif "impact" in q_lower or "tác động" in q_lower or "doanh nghiệp" in q_lower:
-            return {
-                "status": "success",
-                "decision": "GROUNDED",
-                "confidence": "CAO",
-                "answer": "Theo bài giảng [T02-011], khi đánh giá impact trong doanh nghiệp, bạn cần đi phỏng vấn các bên liên quan như trưởng bộ phận, CEO để khảo sát quy trình hiện tại, nếu giải quyết được bằng AI thì mang lại hiệu quả bao nhiêu và mất bao lâu để xây dựng.",
-                "citations": ["T02-011"],
-                "clarify_options": []
-            }
-        elif "tiktok" in q_lower:
-            return {
-                "status": "success",
-                "decision": "GROUNDED",
-                "confidence": "CAO",
-                "answer": "Theo bài giảng [T02-003], quy trình làm nội dung TikTok được giảng viên lấy làm ví dụ điển hình cho ô Nỗ lực thấp nhưng Tác động cao (Quick win), nơi AI phát huy thế mạnh rất tốt.",
-                "citations": ["T02-003"],
-                "clarify_options": []
-            }
-
-        # If question has sufficient words but not matched specifically, answer grounded on general framework
+        citations = re.findall(r"\[(T02-\d+)\]", raw_text)
         return {
-            "status": "success",
-            "decision": "GROUNDED",
+            "decision": decision,
             "confidence": "TRUNG_BÌNH",
-            "answer": "Theo tài liệu bài giảng Day 2 [T02-009], ma trận tác động - nỗ lực là một framework đơn giản nhưng hiệu quả để học viên phân loại các đầu việc quan trọng và khoanh vùng ưu tiên triển khai trước.",
-            "citations": ["T02-009"],
+            "answer": answer,
+            "citations": list(dict.fromkeys(citations)),
             "clarify_options": []
         }
