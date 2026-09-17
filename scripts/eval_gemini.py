@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Golden Set Evaluator for VLearn Grounded Tutor (Team BTN)
-Runs evaluation across 10 cases mined from chatlog.
+Runs evaluation across 20 cases covering 4 difficulty layers mined from chatlog.
 Generates eval_report.md and eval_results.json in scripts/ folder.
 
 Usage:
@@ -12,6 +12,9 @@ import os
 import sys
 import json
 import time
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 from dotenv import load_dotenv
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -29,10 +32,10 @@ try:
 except ImportError:
     from backend.core.tutor_engine import GroundedTutorEngine
 
-def run_evaluation(api_key: str = None, model: str = "gemini-1.5-flash"):
+def run_evaluation(api_key: str = None, model: str = "gemini-flash-latest"):
     key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
     if not key:
-        print("❌ Lỗi: Chưa cung cấp GEMINI_API_KEY! Hãy đặt trong file .env hoặc cấu hình biến môi trường.")
+        print("Lỗi: Chưa cung cấp GEMINI_API_KEY! Hãy đặt trong file .env hoặc cấu hình biến môi trường.")
         return
 
     golden_path = os.path.join(CURRENT_DIR, "golden_set.json")
@@ -42,7 +45,7 @@ def run_evaluation(api_key: str = None, model: str = "gemini-1.5-flash"):
     with open(golden_path, "r", encoding="utf-8") as f:
         test_cases = json.load(f)
 
-    print(f"🔬 BẮT ĐẦU CHẠY EVALUATION BẰNG GEMINI API ({model}) TRÊN {len(test_cases)} CASES...")
+    print(f"BAT DAU CHAY EVALUATION (Model: {model}) TREN {len(test_cases)} CASES...")
     engine = GroundedTutorEngine(api_key=key, model_name=model)
 
     results = []
@@ -50,8 +53,13 @@ def run_evaluation(api_key: str = None, model: str = "gemini-1.5-flash"):
     total_latency = 0
 
     for idx, case in enumerate(test_cases, 1):
-        print(f"[{idx}/{len(test_cases)}] Đang chạy {case['id']} ({case['type']}): '{case['question']}'")
-        res = engine.query_tutor(case["question"])
+        q = case["question"]
+        cid = case["id"]
+        ctype = case["type"]
+        layer = case.get("layer", "Chỗ khó")
+        print(f"[{idx}/{len(test_cases)}] {cid} ({ctype}): '{q[:40]}...'")
+
+        res = engine.query_tutor(q)
 
         decision = res.get("decision")
         expected = case["expected_decision"]
@@ -68,33 +76,34 @@ def run_evaluation(api_key: str = None, model: str = "gemini-1.5-flash"):
         is_passed = decision_match and citation_valid
         if is_passed:
             passed_count += 1
-            print(f"   => PASS (Quyết định: {decision}, Trích dẫn: {citations}, {latency}ms)")
+            print(f"   => PASS | Quyết định: {decision} | Trích dẫn: {citations} | {latency}ms")
         else:
-            print(f"   => FAIL (Kỳ vọng: {expected}, Thực tế: {decision}, Trích dẫn: {citations})")
+            print(f"   => FAIL | Kỳ vọng: {expected} != Thực tế: {decision} | Trích dẫn: {citations}")
 
         results.append({
-            "case_id": case["id"],
-            "type": case["type"],
-            "question": case["question"],
+            "case_id": cid,
+            "layer": layer,
+            "type": ctype,
+            "question": q,
             "expected_decision": expected,
             "actual_decision": decision,
             "citations": citations,
             "latency_ms": latency,
             "passed": is_passed,
-            "answer_snippet": res.get("answer", "")[:100] + "..."
+            "answer_snippet": res.get("answer", "")[:120] + "..."
         })
-        time.sleep(0.5)
+        time.sleep(0.4)
 
     pass_rate = round((passed_count / len(test_cases)) * 100, 1)
     avg_latency = round(total_latency / len(test_cases), 0)
 
-    print("\n" + "="*50)
-    print(f"🏆 KẾT QUẢ ĐÁNH GIÁ THỰC TẾ:")
-    print(f"   - Tổng số test cases: {len(test_cases)}")
-    print(f"   - Số case đạt chuẩn: {passed_count}/{len(test_cases)}")
-    print(f"   - Tỷ lệ đạt (Pass Rate): {pass_rate}%")
-    print(f"   - Độ trễ trung bình: {avg_latency} ms")
-    print("="*50)
+    print("\n" + "="*55)
+    print(f"KET QUA EVALUATION THUC TE (GOLDEN SET):")
+    print(f"- Tong so test cases: {len(test_cases)}")
+    print(f"- So ca dat tieu chuan: {passed_count}/{len(test_cases)}")
+    print(f"- Ty le dat (Pass Rate): {pass_rate}%")
+    print(f"- Do tre trung binh: {avg_latency} ms")
+    print("="*55)
 
     # Save eval_results.json
     out_json = os.path.join(CURRENT_DIR, "eval_results.json")
@@ -111,20 +120,21 @@ def run_evaluation(api_key: str = None, model: str = "gemini-1.5-flash"):
     # Save eval_report.md
     out_md = os.path.join(CURRENT_DIR, "eval_report.md")
     with open(out_md, "w", encoding="utf-8") as f:
-        f.write(f"# BÁO CÁO ĐÁNH GIÁ CHẤT LƯỢNG — VLEARN GROUNDED TUTOR (NHÓM BTN)\n\n")
+        f.write(f"# BÁO CÁO ĐÁNH GIÁ CHẤT LƯỢNG (GOLDEN SET EVALUATION) — VLEARN GROUNDED TUTOR\n\n")
         f.write(f"- **Mô hình AI:** `{model}` (Google Gemini API)\n")
-        f.write(f"- **Tổng số ca kiểm thử:** {len(test_cases)} cases từ chatlog thật\n")
-        f.write(f"- **Tỷ lệ đạt chuẩn (Pass Rate):** **{pass_rate}%** ({passed_count}/{len(test_cases)})\n")
-        f.write(f"- **Độ trễ trung bình:** {avg_latency} ms\n\n")
-        f.write(f"## Bảng chi tiết từng ca kiểm thử:\n\n")
-        f.write(f"| Case ID | Loại | Câu hỏi | Kỳ vọng | Thực tế | Trích dẫn | Kết quả |\n")
-        f.write(f"|---|---|---|---|---|---|---|\n")
+        f.write(f"- **Tổng số ca kiểm thử:** {len(test_cases)} ca (Bao phủ đủ 4 lớp chỗ khó theo taxonomy của Hackathon)\n")
+        f.write(f"- **Tỷ lệ đạt chuẩn (Pass Rate):** **{pass_rate}%** ({passed_count}/{len(test_cases)} ca)\n")
+        f.write(f"- **Độ trễ phản hồi trung bình:** {avg_latency} ms\n\n")
+        f.write(f"## Bảng chi tiết kết quả 20 ca kiểm thử:\n\n")
+        f.write(f"| Case ID | Lớp chỗ khó | Loại | Câu hỏi | Kỳ vọng | Thực tế | Trích dẫn | Kết quả |\n")
+        f.write(f"|---|---|---|---|---|---|---|---|\n")
         for r in results:
             status_icon = "✅ PASS" if r["passed"] else "❌ FAIL"
             cits = ", ".join(r["citations"]) if r["citations"] else "Không"
-            f.write(f"| {r['case_id']} | {r['type']} | {r['question']} | {r['expected_decision']} | {r['actual_decision']} | {cits} | {status_icon} |\n")
+            q_clean = r["question"].replace("|", "\\|")
+            f.write(f"| {r['case_id']} | {r['layer']} | {r['type']} | {q_clean} | {r['expected_decision']} | {r['actual_decision']} | {cits} | {status_icon} |\n")
 
-    print(f"📄 Đã xuất báo cáo tại:\n- {out_json}\n- {out_md}")
+    print(f"Da xuat bao cao:\n- {out_json}\n- {out_md}")
 
 if __name__ == "__main__":
     run_evaluation()
