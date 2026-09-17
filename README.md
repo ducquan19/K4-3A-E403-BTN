@@ -1,141 +1,141 @@
-﻿# Mini Hackathon AI â€” Batch 04 Â· Lá»›p 3A
+﻿# Mini Hackathon AI — Batch 04 · Lớp 3A
 
-**SPEC â†’ Prototype â†’ Demo.** ÄÃ¢y khÃ´ng pháº£i cuá»™c thi code â€” Ä‘Ã¢y lÃ  cuá»™c thi **tÆ° duy sáº£n pháº©m AI**.
+**SPEC → Prototype → Demo.** Đây không phải cuộc thi code — đây là cuộc thi **tư duy sản phẩm AI**.
 
 ---
 
-## ðŸ‘¥ 1. THÃ€NH VIÃŠN NHÃ“M & PHÃ‚N CÃ”NG VAI TRÃ’
+## 👥 1. THÀNH VIÊN NHÓM & PHÂN CÔNG VAI TRÒ
 
-**Lá»›p:** 3A Â· **PhÃ²ng:** E403 Â· **Cá»¥m:** ____ Â· **Track:** A1 Â· VLearn Grounded Tutor  
-**TÃªn nhÃ³m:** **BTN** Â· **Äá» tÃ i:** Cháº·n áº£o giÃ¡c, tráº£ lá»i cÃ³ cÄƒn cá»© trÃ­ch dáº«n vÃ  báº£o vá»‡ ranh giá»›i bÃ i giáº£ng
+**Lớp:** 3A · **Phòng:** E403 · **Cụm:** ____ · **Track:** A1 · VLearn Grounded Tutor
+**Tên nhóm:** **BTN** · **Đề tài:** Chặn ảo giác, trả lời có căn cứ trích dẫn và bảo vệ ranh giới bài giảng
 
-| Há» vÃ  TÃªn | MÃ£ Há»c ViÃªn | Vai trÃ² chÃ­nh | Pháº§n viá»‡c Ä‘áº£m nhiá»‡m cá»¥ thá»ƒ trong dá»± Ã¡n |
+| Họ và Tên | Mã Học Viên | Vai trò chính | Phần việc đảm nhiệm cụ thể trong dự án |
 |---|---|---|---|
-| **Chu PhÃºc Anh** | *2A202602370* | **Product Lead (Äá»™i trÆ°á»Ÿng)** | Phá»¥ trÃ¡ch Canvas CP1, AI Spec, Ã¡p dá»¥ng nguyÃªn táº¯c HAX/PAIR, Ä‘iá»u phá»‘i nhÃ³m vÃ  ná»™p bÃ i cÃ¡c Checkpoint |
-| **Tráº§n Äá»©c QuÃ¢n** | *2A202602922* | **Data & Eval Lead** | Khai thÃ¡c 13.494 chatlog tháº­t, chá»n báº±ng chá»©ng, xÃ¢y dá»±ng bá»™ test Golden Set 20 cases (4 lá»›p) vÃ  Ä‘o Ä‘áº¡c káº¿t quáº£ CP3 |
-| **BÃ¹i Minh QuÃ¢n** | *2A202602958* | **AI & Prompt Engineer** | Thiáº¿t káº¿ Grounding Guardrail Prompt, phÃ¢n táº§ng 4 lá»›p chá»— khÃ³, tÃ­ch há»£p káº¿t ná»‘i Google Gemini API |
-| **Äá»— Quang Vinh** | *2A202602989* | **Tech & Prototype Lead** | XÃ¢y dá»±ng Full-Stack App (Backend Flask + Frontend Web LMS Split-Screen), tÃ­ch há»£p AI Inspector vÃ  quay Video Demo |
+| **Chu Phúc Anh** | *2A202602370* | **Product Lead (Đội trưởng)** | Phụ trách Canvas CP1, AI Spec, áp dụng nguyên tắc HAX/PAIR, điều phối nhóm và nộp bài các Checkpoint |
+| **Trần Đức Quân** | *2A202602922* | **Data & Eval Lead** | Khai thác 13.494 chatlog thật, chọn bằng chứng, xây dựng bộ test Golden Set 20 cases (4 lớp) và đo đạc kết quả CP3 |
+| **Bùi Minh Quân** | *2A202602958* | **AI & Prompt Engineer** | Thiết kế Grounding Guardrail Prompt, phân tầng 4 lớp chỗ khó, tích hợp kết nối Google Gemini API |
+| **Đỗ Quang Vinh** | *2A202602989* | **Tech & Prototype Lead** | Xây dựng Full-Stack App (Backend Flask + Frontend Web LMS Split-Screen), tích hợp AI Inspector và quay Video Demo |
 
-> **Willing users (KhÃ¡ch thá»­ nghiá»‡m CP5):** ÄÃ£ káº¿t ná»‘i vá»›i 2 há»c viÃªn ngoÃ i nhÃ³m sáºµn sÃ ng tham gia kiá»ƒm thá»­ prototype táº¡i vÃ²ng validation.
-
----
-
-## ðŸŒŸ 2. Tá»”NG QUAN Äá»€ TÃ€I & LÃT Cáº®T GIáº¢I PHÃP (TRACK A1)
-
-### Ná»—i Ä‘au & Báº±ng chá»©ng thá»±c táº¿ (Mining tá»« 13.494 turns chatlog trong `tutor_turns.csv`):
-- **28.0%** (3.781 lÆ°á»£t) cÃ¢u tráº£ lá»i cá»§a AI Tutor trÆ°á»›c Ä‘Ã¢y khÃ´ng há» cÃ³ trÃ­ch dáº«n tÃ i liá»‡u (`has_citation = False`).
-- **90.3%** pháº£n há»“i dáº­p khuÃ´n á»Ÿ má»©c `review_concept`; chá»‰ **0.2%** (28 lÆ°á»£t) biáº¿t há»i ngÆ°á»£c khi há»c viÃªn há»i mÆ¡ há»“.
-- Khi cÃ¢u há»i ngoÃ i pháº¡m vi tÃ i liá»‡u hoáº·c quÃ¡ mÆ¡ há»“, tutor thÆ°á»ng Ä‘oÃ¡n mÃ², giáº£i thÃ­ch lan man, khiáº¿n há»c viÃªn tiáº¿p nháº­n sai kiáº¿n thá»©c vÃ  máº¥t niá»m tin.
-
-### LÃ¡t cáº¯t sáº£n pháº©m (ÄÃºng chuáº©n 1 cÃ¢u):
-> **Má»™t há»c viÃªn Â· há»i khÃ¡i niá»‡m ngoÃ i pháº¡m vi tÃ i liá»‡u Ä‘ang má»Ÿ Â· AI nháº­n diá»‡n thiáº¿u cÄƒn cá»©, tá»« chá»‘i giáº£i thÃ­ch lan man vÃ  chá»‰ dáº«n nguá»“n chuáº©n Â· há»c viÃªn khÃ´ng bá»‹ tiáº¿p nháº­n kiáº¿n thá»©c sai.**
-
-### Má»©c tá»± Ä‘á»™ng hoÃ¡ (Theo Cost-of-error):
-- **Conditional Automation:** Tá»± tráº£ lá»i khi cÃ³ cÄƒn cá»© cháº¯c cháº¯n trong bÃ i; há»i láº¡i khi mÆ¡ há»“ (HAX G10); tá»« chá»‘i lá»‹ch sá»± vÃ  hÆ°á»›ng dáº«n kÃªnh há»— trá»£ khi cÃ¢u há»i vÆ°á»£t ngoÃ i ranh giá»›i bÃ i giáº£ng.
+> **Willing users (Khách thử nghiệm CP5):** Đã kết nối với 2 học viên ngoài nhóm sẵn sàng tham gia kiểm thử prototype tại vòng validation.
 
 ---
 
-## ðŸš€ 3. ÄIá»‚M Ná»”I Báº¬T & CHá»¨NG MINH HOáº T Äá»˜NG THáº¬T (KHÃ”NG PHáº¢I MOCKUP)
+## 🌟 2. TỔNG QUAN ĐỀ TÀI & LÁT CẮT GIẢI PHÁP (TRACK A1)
 
-1. **Káº¿t ná»‘i Google Gemini API tháº­t (`gemini-1.5-flash` / `gemini-2.0-flash`):**
-   - TÃ­ch há»£p trá»±c tiáº¿p qua SDK `google-genai` vÃ  REST API cá»§a Google, xá»­ lÃ½ phÃ¢n loáº¡i ngá»¯ nghÄ©a thá»i gian thá»±c.
-2. **AI Call Inspector (Minh báº¡ch 100% lÆ°á»£t gá»i AI):**
-   - NÃºt **"ðŸ” AI Inspector"** trÃªn giao diá»‡n hiá»ƒn thá»‹: **Thá»i gian pháº£n há»“i thá»±c táº¿ (ms)**, **Model sá»­ dá»¥ng**, **Prompt gá»­i Ä‘i** vÃ  **JSON thÃ´ tráº£ vá» tá»« Google Gemini**.
-3. **TrÃ¬nh xem bÃ i giáº£ng tÆ°Æ¡ng tÃ¡c hai chiá»u (Split-Screen LMS):**
-   - Click vÃ o tag trÃ­ch dáº«n `ðŸ“Œ [T02-010]` trong khung chat, bÃ i giáº£ng bÃªn trÃ¡i tá»± Ä‘á»™ng cuá»™n Ä‘áº¿n vÃ  phÃ¡t sÃ¡ng viá»n ná»•i báº­t (glow animation).
-4. **NÃºt thá»­ nhanh 1-Click cho 3 ká»‹ch báº£n chÃ­nh:**
-   - ðŸŸ¢ **1. Trong bÃ i (Grounded):** Tráº£ lá»i cÃ³ trÃ­ch dáº«n nguá»“n `[T02-xxx]`.
-   - ðŸŸ¡ **2. MÆ¡ há»“ (Clarify - HAX G10):** Há»i láº¡i 1 cÃ¢u kÃ¨m cÃ¡c lá»±a chá»n báº¥m nhanh.
-   - ðŸ”´ **3. NgoÃ i bÃ i (Out of Bounds):** Tá»« chá»‘i giáº£i thÃ­ch bÃ i há»c, hÆ°á»›ng dáº«n sang kÃªnh Discord cá»§a TA.
-5. **Bá»™ Ä‘o Ä‘áº¡c thá»±c nghiá»‡m tá»± Ä‘á»™ng (`scripts/eval_gemini.py`):**
-   - Cháº¡y kiá»ƒm thá»­ 20 ca tá»« chatlog tháº­t (4 lá»›p) qua Gemini API vÃ  xuáº¥t bÃ¡o cÃ¡o Ä‘o Ä‘áº¡c sá»‘ liá»‡u cho Checkpoint 3.
+### Nỗi đau & Bằng chứng thực tế (Mining từ 13.494 turns chatlog trong `tutor_turns.csv`):
+- **28.0%** (3.781 lượt) câu trả lời của AI Tutor trước đây không hề có trích dẫn tài liệu (`has_citation = False`).
+- **90.3%** phản hồi dập khuôn ở mức `review_concept`; chỉ **0.2%** (28 lượt) biết hỏi ngược khi học viên hỏi mơ hồ.
+- Khi câu hỏi ngoài phạm vi tài liệu hoặc quá mơ hồ, tutor thường đoán mò, giải thích lan man, khiến học viên tiếp nhận sai kiến thức và mất niềm tin.
+
+### Lát cắt sản phẩm (Đúng chuẩn 1 câu):
+> **Một học viên · hỏi khái niệm ngoài phạm vi tài liệu đang mở · AI nhận diện thiếu căn cứ, từ chối giải thích lan man và chỉ dẫn nguồn chuẩn · học viên không bị tiếp nhận kiến thức sai.**
+
+### Mức tự động hoá (Theo Cost-of-error):
+- **Conditional Automation:** Tự trả lời khi có căn cứ chắc chắn trong bài; hỏi lại khi mơ hồ (HAX G10); từ chối lịch sự và hướng dẫn kênh hỗ trợ khi câu hỏi vượt ngoài ranh giới bài giảng.
 
 ---
 
-## ðŸ› ï¸ 4. HÆ¯á»šNG DáºªN CÃ€I Äáº¶T & KHá»žI CHáº Y (TURNKEY RUN)
+## 🚀 3. ĐIỂM NỔI BẬT & CHỨNG MINH HOẠT ĐỘNG THẬT (KHÔNG PHẢI MOCKUP)
 
-### BÆ°á»›c 1: CÃ i Ä‘áº·t thÆ° viá»‡n
+1. **Kết nối Google Gemini API thật (`gemini-1.5-flash` / `gemini-2.0-flash`):**
+   - Tích hợp trực tiếp qua SDK `google-genai` và REST API của Google, xử lý phân loại ngữ nghĩa thời gian thực.
+2. **AI Call Inspector (Minh bạch 100% lượt gọi AI):**
+   - Nút **"🔍 AI Inspector"** trên giao diện hiển thị: **Thời gian phản hồi thực tế (ms)**, **Model sử dụng**, **Prompt gửi đi** và **JSON thô trả về từ Google Gemini**.
+3. **Trình xem bài giảng tương tác hai chiều (Split-Screen LMS):**
+   - Click vào tag trích dẫn `📌 [T02-010]` trong khung chat, bài giảng bên trái tự động cuộn đến và phát sáng viền nổi bật (glow animation).
+4. **Nút thử nhanh 1-Click cho 3 kịch bản chính:**
+   - 🟢 **1. Trong bài (Grounded):** Trả lời có trích dẫn nguồn `[T02-xxx]`.
+   - 🟡 **2. Mơ hồ (Clarify - HAX G10):** Hỏi lại 1 câu kèm các lựa chọn bấm nhanh.
+   - 🔴 **3. Ngoài bài (Out of Bounds):** Từ chối giải thích bài học, hướng dẫn sang kênh Discord của TA.
+5. **Bộ đo đạc thực nghiệm tự động (`scripts/eval_gemini.py`):**
+   - Chạy kiểm thử 20 ca từ chatlog thật (4 lớp) qua Gemini API và xuất báo cáo đo đạc số liệu cho Checkpoint 3.
+
+---
+
+## 🛠️ 4. HƯỚNG DẪN CÀI ĐẶT & KHỞI CHẠY (TURNKEY RUN)
+
+### Bước 1: Cài đặt thư viện
 ```bash
 pip install -r requirements.txt
 ```
 
-### BÆ°á»›c 2: Khá»Ÿi cháº¡y sáº£n pháº©m (1 lá»‡nh duy nháº¥t)
+### Bước 2: Khởi chạy sản phẩm (1 lệnh duy nhất)
 ```bash
 python run.py
 ```
-> Há»‡ thá»‘ng sáº½ khá»Ÿi Ä‘á»™ng mÃ¡y chá»§ Backend táº¡i cá»•ng `5000` vÃ  **tá»± Ä‘á»™ng má»Ÿ trÃ¬nh duyá»‡t web** táº¡i:  
-> ðŸ”— `http://localhost:5000`
+> Hệ thống sẽ khởi động máy chủ Backend tại cổng `5000` và **tự động mở trình duyệt web** tại:
+> 🔗 `http://localhost:5000`
 
-### BÆ°á»›c 3: Cáº¥u hÃ¬nh Gemini API Key
-- Báº¥m nÃºt **"âš™ï¸ Cáº¥u hÃ¬nh API"** á»Ÿ gÃ³c trÃªn bÃªn pháº£i mÃ n hÃ¬nh vÃ  dÃ¡n API Key cá»§a báº¡n (láº¥y miá»…n phÃ­ táº¡i [aistudio.google.com](https://aistudio.google.com/app/apikey)).
-- Báº¥m **"âš¡ Thá»­ káº¿t ná»‘i API"** Ä‘á»ƒ kiá»ƒm tra Ä‘á»™ trá»… máº¡ng thá»±c táº¿.
-- *(Hoáº·c táº¡o file `.env` vá»›i ná»™i dung `GEMINI_API_KEY=AIzaSy...` Ä‘á»ƒ há»‡ thá»‘ng tá»± nháº­n diá»‡n).*
+### Bước 3: Cấu hình Gemini API Key
+- Bấm nút **"⚙️ Cấu hình API"** ở góc trên bên phải màn hình và dán API Key của bạn (lấy miễn phí tại [aistudio.google.com](https://aistudio.google.com/app/apikey)).
+- Bấm **"⚡ Thử kết nối API"** để kiểm tra độ trễ mạng thực tế.
+- *(Hoặc tạo file `.env` với nội dung `GEMINI_API_KEY=AIzaSy...` để hệ thống tự nhận diện).*
 
 ---
 
-## ðŸ§ª 5. CÃ”NG Cá»¤ ÄO Äáº C VÃ€ KIá»‚M THá»¬ TRONG THÆ¯ Má»¤C `scripts/`
+## 🧪 5. CÔNG CỤ ĐO ĐẠC VÀ KIỂM THỬ TRONG THƯ MỤC `scripts/`
 
-### 1. Kiá»ƒm tra nhanh API qua dÃ²ng lá»‡nh (3 giÃ¢y):
+### 1. Kiểm tra nhanh API qua dòng lệnh (3 giây):
 ```bash
 python scripts/test_api.py
 ```
-*(Hoáº·c truyá»n key trá»±c tiáº¿p: `python scripts/test_api.py --key YOUR_KEY`)*
+*(Hoặc truyền key trực tiếp: `python scripts/test_api.py --key YOUR_KEY`)*
 
-### 2. Cháº¡y bá»™ Ä‘Ã¡nh giÃ¡ Golden Set phá»¥c vá»¥ Checkpoint 3 & Checkpoint 4:
+### 2. Chạy bộ đánh giá Golden Set phục vụ Checkpoint 3 & Checkpoint 4:
 ```bash
 python scripts/eval_gemini.py
 ```
-Há»‡ thá»‘ng sáº½ cháº¡y qua 20 ca kiá»ƒm thá»­ thá»±c táº¿ (4 lá»›p chá»— khÃ³) tá»« chatlog vÃ  tá»± Ä‘á»™ng sinh 2 file bÃ¡o cÃ¡o bÃªn trong thÆ° má»¥c `scripts/`:
-- `scripts/eval_results.json`: Chi tiáº¿t tá»«ng lÆ°á»£t gá»i AI, thá»i gian pháº£n há»“i, trÃ­ch dáº«n.
-- `scripts/eval_report.md`: Báº£ng tá»•ng káº¿t sá»‘ Ä‘o vÃ  tá»· lá»‡ Ä‘áº¡t chuáº©n (Pass Rate %).
+Hệ thống sẽ chạy qua 20 ca kiểm thử thực tế (4 lớp chỗ khó) từ chatlog và tự động sinh 2 file báo cáo bên trong thư mục `scripts/`:
+- `scripts/eval_results.json`: Chi tiết từng lượt gọi AI, thời gian phản hồi, trích dẫn.
+- `scripts/eval_report.md`: Bảng tổng kết số đo và tỷ lệ đạt chuẩn (Pass Rate %).
 
 ---
 
-## ðŸ“ 6. Cáº¤U TRÃšC THÆ¯ Má»¤C REPO
+## 📁 6. CẤU TRÚC THƯ MỤC REPO
 
 ```
 K4-3A-E403-BTN/
-â”œâ”€â”€ README.md              â† File nÃ y (Báº£ng thÃ nh viÃªn + HÆ°á»›ng dáº«n + ThÃ´ng tin Ä‘á» tÃ i)
-â”œâ”€â”€ spec.md                â† AI Spec hoÃ n chá»‰nh 8 pháº§n (R1, R2, R3, R4)
-â”œâ”€â”€ canvas-cp1.jpg & .md   â† Canvas 4 Ã´ Checkpoint 1
-â”œâ”€â”€ run.py                 â† Launcher khá»Ÿi Ä‘á»™ng Fullstack 1 lá»‡nh (R5)
-â”œâ”€â”€ requirements.txt       â† Danh má»¥c thÆ° viá»‡n phá»¥ thuá»™c
-â”œâ”€â”€ .env.example           â† Máº«u biáº¿n mÃ´i trÆ°á»ng
-â”‚
-â”œâ”€â”€ scripts/               â† THÆ¯ Má»¤C CHá»¨A CÃC SCRIPT KIá»‚M THá»¬ & ÄO Äáº C
-â”‚   â”œâ”€â”€ test_api.py        â† Script CLI kiá»ƒm tra nhanh Gemini API
-â”‚   â”œâ”€â”€ eval_gemini.py     â† Script cháº¡y bá»™ Ä‘o Ä‘áº¡c Golden Set (CP3 / R4)
-â”‚   â””â”€â”€ golden_set.json    â† Bá»™ 20 ca kiá»ƒm thá»­ 4 lá»›p trÃ­ch tá»« chatlog tháº­t
-â”‚
-â”œâ”€â”€ backend/               â† BACKEND (Python Flask REST API)
-â”‚   â”œâ”€â”€ app.py             â† MÃ¡y chá»§ API phá»¥c vá»¥ /api/chat, /api/lecture
-â”‚   â”œâ”€â”€ core/
-â”‚   â”‚   â”œâ”€â”€ __init__.py
-â”‚   â”‚   â””â”€â”€ tutor_engine.pyâ† LÃµi Guardrail Grounding & Gá»i Google Gemini API
-â”‚   â””â”€â”€ data/
-â”‚       â””â”€â”€ lecture_day02.mdâ† Dá»¯ liá»‡u bÃ i giáº£ng Day 2 cÃ³ mÃ£ Ä‘oáº¡n [T02-xxx]
-â”‚
-â””â”€â”€ frontend/              â† FRONTEND (Giao diá»‡n Web LMS Split-Screen)
-    â”œâ”€â”€ index.html         â† Khung giao diá»‡n Split-Screen 2 cá»™t
-    â”œâ”€â”€ style.css          â† Dark Navy Theme, hiá»‡u á»©ng highlight trÃ­ch dáº«n
-    â””â”€â”€ app.js             â† Xá»­ lÃ½ tÆ°Æ¡ng tÃ¡c, 3 nÃºt demo 1-click, AI Inspector
+├── README.md              ← File này (Bảng thành viên + Hướng dẫn + Thông tin đề tài)
+├── spec.md                ← AI Spec hoàn chỉnh 8 phần (R1, R2, R3, R4)
+├── canvas-cp1.jpg & .md   ← Canvas 4 ô Checkpoint 1
+├── run.py                 ← Launcher khởi động Fullstack 1 lệnh (R5)
+├── requirements.txt       ← Danh mục thư viện phụ thuộc
+├── .env.example           ← Mẫu biến môi trường
+│
+├── scripts/               ← THƯ MỤC CHỨA CÁC SCRIPT KIỂM THỬ & ĐO ĐẠC
+│   ├── test_api.py        ← Script CLI kiểm tra nhanh Gemini API
+│   ├── eval_gemini.py     ← Script chạy bộ đo đạc Golden Set (CP3 / R4)
+│   └── golden_set.json    ← Bộ 20 ca kiểm thử 4 lớp trích từ chatlog thật
+│
+├── backend/               ← BACKEND (Python Flask REST API)
+│   ├── app.py             ← Máy chủ API phục vụ /api/chat, /api/lecture
+│   ├── core/
+│   │   ├── __init__.py
+│   │   └── tutor_engine.py← Lõi Guardrail Grounding & Gọi Google Gemini API
+│   └── data/
+│       └── lecture_day02.md← Dữ liệu bài giảng Day 2 có mã đoạn [T02-xxx]
+│
+└── frontend/              ← FRONTEND (Giao diện Web LMS Split-Screen)
+    ├── index.html         ← Khung giao diện Split-Screen 2 cột
+    ├── style.css          ← Dark Navy Theme, hiệu ứng highlight trích dẫn
+    └── app.js             ← Xử lý tương tác, 3 nút demo 1-click, AI Inspector
 ```
 
 ---
 
-## ðŸ“… 7. Lá»ŠCH CHECKPOINT & QUY Äá»ŠNH HACKATHON
+## 📅 7. LỊCH CHECKPOINT & QUY ĐỊNH HACKATHON
 
-| Má»‘c | Cáº§n hoÃ n thÃ nh | Háº¡n (ca 3A) | Tráº¡ng thÃ¡i nhÃ³m BTN |
+| Mốc | Cần hoàn thành | Hạn (ca 3A) | Trạng thái nhóm BTN |
 |---|---|---|---|
-| **CP1** | Canvas 4 Ã´ + Ä‘á»™i trÆ°á»Ÿng + link repo GitHub | 19:30 Â· 16/9 | **ÄÃƒ HOÃ€N THÃ€NH** |
-| **CP2** | Cho tháº¥y luá»“ng hoáº¡t Ä‘á»™ng (mock báº¥m Ä‘Æ°á»£c / video) | 21:00 Â· 16/9 | **ÄÃƒ HOÃ€N THÃ€NH** |
-| **CP3** | Video thao tÃ¡c 30s + sá»‘ Ä‘o (thá»­ bao nhiÃªu, Ä‘Ãºng bao nhiÃªu) | 16:00 Â· 17/9 | **ÄÃƒ Sáº´N SÃ€NG** (`scripts/eval_gemini.py`) |
-| **CP4** | Chá»‘t `spec.md` â€” khoÃ¡ chuáº©n "Ä‘áº¡t" Â· tá»± khai pháº§n chÆ°a xong | 21:00 Â· 17/9 | **ÄÃƒ HOÃ€N THÃ€NH** (`spec.md`) |
-| **CP5** | Slide PDF + video demo dá»± phÃ²ng cho buá»•i pitch | 13:00 Â· 18/9 | Äang chuáº©n bá»‹ |
-| **CP6** | Thuyáº¿t trÃ¬nh vÃ²ng thi táº¡i phÃ²ng E403 | 17:30 Â· 18/9 | Sáºµn sÃ ng |
+| **CP1** | Canvas 4 ô + đội trưởng + link repo GitHub | 19:30 · 16/9 | **ĐÃ HOÀN THÀNH** |
+| **CP2** | Cho thấy luồng hoạt động (mock bấm được / video) | 21:00 · 16/9 | **ĐÃ HOÀN THÀNH** |
+| **CP3** | Video thao tác 30s + số đo (thử bao nhiêu, đúng bao nhiêu) | 16:00 · 17/9 | **ĐÃ SẴN SÀNG** (`scripts/eval_gemini.py`) |
+| **CP4** | Chốt `spec.md` — khoá chuẩn "đạt" · tự khai phần chưa xong | 21:00 · 17/9 | **ĐÃ HOÀN THÀNH** (`spec.md`) |
+| **CP5** | Slide PDF + video demo dự phòng cho buổi pitch | 13:00 · 18/9 | Đang chuẩn bị |
+| **CP6** | Thuyết trình vòng thi tại phòng E403 | 17:30 · 18/9 | Sẵn sàng |
 
 ---
 
-## âš–ï¸ 8. Báº¢O Máº¬T Dá»® LIá»†U ÄÆ¯á»¢C CUNG Cáº¤P
-- ToÃ n bá»™ dá»¯ liá»‡u chatlog vÃ  transcript Ä‘Æ°á»£c cung cáº¥p trong hackathon thuá»™c quy Ä‘á»‹nh báº£o máº­t cá»§a khÃ³a há»c.
-- NhÃ³m cam káº¿t: Chá»‰ sá»­ dá»¥ng dá»¯ liá»‡u trong pháº¡m vi bÃ i thi; khÃ´ng chia sáº» ra ngoÃ i khÃ³a há»c; khÃ´ng commit dá»¯ liá»‡u thÃ´ chÆ°a áº©n danh; tÃ´n trá»ng quyá»n riÃªng tÆ° cá»§a há»c viÃªn vÃ  giáº£ng viÃªn.
+## ⚖️ 8. BẢO MẬT DỮ LIỆU ĐƯỢC CUNG CẤP
+- Toàn bộ dữ liệu chatlog và transcript được cung cấp trong hackathon thuộc quy định bảo mật của khóa học.
+- Nhóm cam kết: Chỉ sử dụng dữ liệu trong phạm vi bài thi; không chia sẻ ra ngoài khóa học; không commit dữ liệu thô chưa ẩn danh; tôn trọng quyền riêng tư của học viên và giảng viên.
