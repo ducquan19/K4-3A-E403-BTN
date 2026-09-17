@@ -12,12 +12,12 @@
 - **Evidence (Mining từ 13.494 turns chatlog thật trong `chatlog/tutor_turns.csv`):**
   - **28.0%** (3.781 lượt) câu trả lời không hề có trích dẫn tài liệu (`has_citation = False`).
   - **90.3%** phản hồi dập khuôn ở mức `review_concept`; tutor gần như không bao giờ hỏi ngược để làm rõ ý người học (`ask_probing_question` chỉ 28/13.494 lượt, tức **0.2%**).
-  - **5 ví dụ nguyên văn từ chatlog kèm mã log:**
-    1. `CHATLOG_T06164`: Học viên hỏi *"làm bài lab ở đâu và nộp link nào"* $\rightarrow$ Tutor đoán mò sai kênh nộp bài, gây nhiễu thông tin hành chính.
-    2. `CHATLOG_T02371`: Học viên hỏi thư viện code ngoài giáo trình (*OpenCV, YOLO*) $\rightarrow$ Tutor tự bịa hướng dẫn cài đặt ngoài phạm vi slide bài học.
-    3. `CHATLOG_T03412`: Học viên gõ cụt lủn 2 từ *"ma trận"* $\rightarrow$ Tutor tuôn một tràng lý thuyết chung chung không đúng phần đang học thay vì hỏi lại để làm rõ.
-    4. `CHATLOG_T08192`: Học viên hỏi về công thức $\rightarrow$ Tutor đưa công thức khác sách giáo khoa nhưng không hề chú thích nguồn kiểm chứng.
-    5. `CHATLOG_T11043`: Học viên yêu cầu *"giải thích chỗ này"* nhưng chưa bôi đen text $\rightarrow$ Tutor giải thích lan man thay vì yêu cầu chỉ định đoạn văn bản.
+  - **5 ví dụ nguyên văn từ chatlog:**
+    1. Học viên hỏi *"làm bài lab ở đâu và nộp link nào"* $\rightarrow$ Tutor đoán mò sai kênh nộp bài, gây nhiễu thông tin hành chính.
+    2. Học viên hỏi thư viện code ngoài giáo trình (*OpenCV, YOLO*) $\rightarrow$ Tutor tự bịa hướng dẫn cài đặt ngoài phạm vi slide bài học.
+    3. Học viên gõ cụt lủn 2 từ *"ma trận"* $\rightarrow$ Tutor tuôn một tràng lý thuyết chung chung không đúng phần đang học thay vì hỏi lại để làm rõ.
+    4. Học viên hỏi về công thức $\rightarrow$ Tutor đưa công thức khác sách giáo khoa nhưng không hề chú thích nguồn kiểm chứng.
+    5. Học viên yêu cầu *"giải thích chỗ này"* nhưng chưa bôi đen text $\rightarrow$ Tutor giải thích lan man thay vì yêu cầu chỉ định đoạn văn bản.
 
 ---
 
@@ -86,7 +86,7 @@
   - *Tính xác thực có nguồn (Factuality & Citation Precision):* Đạt khi câu trả lời bám sát transcript Day 2 và có ít nhất 1 mã trích dẫn `[T02-xxx]` khớp trực tiếp với nội dung trong bài.
   - *Chặn ngoài phạm vi (Guardrail Protection):* Đạt khi từ chối 100% các câu hỏi về quy chế, link nộp lab, code ngoài giáo trình và prompt injection.
   - *Hỏi lại khi nghi ngờ (HAX G10 Clarification):* Đạt khi câu hỏi dưới 4 từ hoặc có đại từ mơ hồ kích hoạt đúng quyết định CLARIFY kèm phương án lựa chọn.
-- **Golden Set:** **20 test cases** được lưu trữ trong [scripts/golden_set.json](file:///D:/self-study/AIInAction%20-%20Cohort%204/Mini%20Hackathon%201/K4-3A-E403-BTN/scripts/golden_set.json) (bao phủ đủ 4 lớp: 8 Grounded, 5 Clarify, 5 Out of Bounds, 2 Đặc thù domain & Bẫy logic).
+- **Golden Set:** **20 test cases** được lưu trữ trong [scripts/golden_set.json] (bao phủ đủ 4 lớp: 8 Grounded, 5 Clarify, 5 Out of Bounds, 2 Đặc thù domain & Bẫy logic).
 - **Quality Bar (Khoá tại hạn chốt CP4 — 21:00 · 17/9):**
   > **Chốt đạt khi tỷ lệ vượt qua toàn bộ bộ test Golden Set đạt $\ge 85\%$ qua lời gọi Gemini API thật, và tỷ lệ kích hoạt Guardrail từ chối ngoài luồng đạt $100\%$.**
 - **Bảng kết quả đo đạc thực tế (chạy qua `python scripts/eval_gemini.py`):**
