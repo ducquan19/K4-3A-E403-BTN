@@ -1,0 +1,92 @@
+[
+  {
+    "id": "CASE-01",
+    "type": "GROUNDED",
+    "turn_id_ref": "T02-009",
+    "question": "Mục đích của việc phân loại bài toán bằng ma trận tác động - nỗ lực là gì?",
+    "expected_decision": "GROUNDED",
+    "must_contain_citation": true,
+    "description": "Câu hỏi lý thuyết trực tiếp trong Day 2"
+  },
+  {
+    "id": "CASE-02",
+    "type": "GROUNDED",
+    "turn_id_ref": "T02-010",
+    "question": "Tại sao trong bối cảnh doanh nghiệp, việc tìm ra quick win lại quan trọng?",
+    "expected_decision": "GROUNDED",
+    "must_contain_citation": true,
+    "description": "Hỏi về lợi ích của quick win"
+  },
+  {
+    "id": "CASE-03",
+    "type": "GROUNDED",
+    "turn_id_ref": "T02-011",
+    "question": "Khi áp dụng framework này vào doanh nghiệp thì cần phỏng vấn những ai?",
+    "expected_decision": "GROUNDED",
+    "must_contain_citation": true,
+    "description": "Hỏi về đối tượng phỏng vấn doanh nghiệp"
+  },
+  {
+    "id": "CASE-04",
+    "type": "GROUNDED",
+    "turn_id_ref": "T02-003",
+    "question": "Ví dụ về quy trình làm nội dung TikTok rơi vào ô nào trong ma trận?",
+    "expected_decision": "GROUNDED",
+    "must_contain_citation": true,
+    "description": "Hỏi về ví dụ TikTok trong bài giảng"
+  },
+  {
+    "id": "CASE-05",
+    "type": "CLARIFY",
+    "turn_id_ref": "CHATLOG_T03412",
+    "question": "ma trận",
+    "expected_decision": "CLARIFY",
+    "must_contain_citation": false,
+    "description": "Câu hỏi 2 từ mơ hồ, kích hoạt HAX G10"
+  },
+  {
+    "id": "CASE-06",
+    "type": "CLARIFY",
+    "turn_id_ref": "CHATLOG_T01294",
+    "question": "cái này làm sao",
+    "expected_decision": "CLARIFY",
+    "must_contain_citation": false,
+    "description": "Câu hỏi cụt ngủn thiếu chủ ngữ ngữ cảnh"
+  },
+  {
+    "id": "CASE-07",
+    "type": "CLARIFY",
+    "turn_id_ref": "CHATLOG_T05581",
+    "question": "phỏng vấn ai",
+    "expected_decision": "CLARIFY",
+    "must_contain_citation": false,
+    "description": "Câu hỏi quá ngắn về phỏng vấn"
+  },
+  {
+    "id": "CASE-08",
+    "type": "OUT_OF_BOUNDS",
+    "turn_id_ref": "CHATLOG_T06164",
+    "question": "Làm bài lab hackathon ở đâu và nộp link nào vậy ạ?",
+    "expected_decision": "OUT_OF_BOUNDS",
+    "must_contain_citation": false,
+    "description": "Hỏi quy trình hành chính không có trong slide Day 2"
+  },
+  {
+    "id": "CASE-09",
+    "type": "OUT_OF_BOUNDS",
+    "turn_id_ref": "CHATLOG_T02371",
+    "question": "Thầy hướng dẫn em cài đặt thư viện OpenCV với YOLOv10 trên Windows với?",
+    "expected_decision": "OUT_OF_BOUNDS",
+    "must_contain_citation": false,
+    "description": "Hỏi code thư viện ngoài bài Day 2"
+  },
+  {
+    "id": "CASE-10",
+    "type": "OUT_OF_BOUNDS",
+    "turn_id_ref": "CHATLOG_T09812",
+    "question": "Thời tiết Hà Nội hôm nay thế nào?",
+    "expected_decision": "OUT_OF_BOUNDS",
+    "must_contain_citation": false,
+    "description": "Câu hỏi phi học tập ngoài domain"
+  }
+]
