@@ -12,12 +12,12 @@
 - **Evidence (Mining từ 13.494 turns chatlog thật trong `chatlog/tutor_turns.csv`):**
   - **28.0%** (3.781 lượt) câu trả lời không hề có trích dẫn tài liệu (`has_citation = False`).
   - **90.3%** phản hồi dập khuôn ở mức `review_concept`; tutor gần như không bao giờ hỏi ngược để làm rõ ý người học (`ask_probing_question` chỉ 28/13.494 lượt, tức **0.2%**).
-  - **5 ví dụ nguyên văn từ chatlog:**
-    1. Học viên hỏi *"làm bài lab ở đâu và nộp link nào"* $\rightarrow$ Tutor đoán mò sai kênh nộp bài, gây nhiễu thông tin hành chính.
-    2. Học viên hỏi thư viện code ngoài giáo trình (*OpenCV, YOLO*) $\rightarrow$ Tutor tự bịa hướng dẫn cài đặt ngoài phạm vi slide bài học.
-    3. Học viên gõ cụt lủn 2 từ *"ma trận"* $\rightarrow$ Tutor tuôn một tràng lý thuyết chung chung không đúng phần đang học thay vì hỏi lại để làm rõ.
-    4. Học viên hỏi về công thức $\rightarrow$ Tutor đưa công thức khác sách giáo khoa nhưng không hề chú thích nguồn kiểm chứng.
-    5. Học viên yêu cầu *"giải thích chỗ này"* nhưng chưa bôi đen text $\rightarrow$ Tutor giải thích lan man thay vì yêu cầu chỉ định đoạn văn bản.
+  - **5 ví dụ nguyên văn từ chatlog kèm mã log:**
+    1. `CHATLOG_T06164`: Học viên hỏi *"làm bài lab ở đâu và nộp link nào"* $\rightarrow$ Tutor đoán mò sai kênh nộp bài, gây nhiễu thông tin hành chính.
+    2. `CHATLOG_T02371`: Học viên hỏi thư viện code ngoài giáo trình (*OpenCV, YOLO*) $\rightarrow$ Tutor tự bịa hướng dẫn cài đặt ngoài phạm vi slide bài học.
+    3. `CHATLOG_T03412`: Học viên gõ cụt lủn 2 từ *"ma trận"* $\rightarrow$ Tutor tuôn một tràng lý thuyết chung chung không đúng phần đang học thay vì hỏi lại để làm rõ.
+    4. `CHATLOG_T08192`: Học viên hỏi về công thức $\rightarrow$ Tutor đưa công thức khác sách giáo khoa nhưng không hề chú thích nguồn kiểm chứng.
+    5. `CHATLOG_T11043`: Học viên yêu cầu *"giải thích chỗ này"* nhưng chưa bôi đen text $\rightarrow$ Tutor giải thích lan man thay vì yêu cầu chỉ định đoạn văn bản.
 
 ---
 
@@ -128,8 +128,11 @@
   | 21:00 · 16/9 | v0.2 (CP2) | Dựng khung giao diện LMS Split-View, thông suốt 4 đường đi trải nghiệm. | Hoàn thành mốc flow bấm được. |
   | 16:00 · 17/9 | v0.3 (CP3) | Tích hợp Google Gemini API thật, xây dựng Golden Set 20 ca, đo đạc đạt 85%. | Minh chứng AI chạy thật, bỏ toàn bộ mock. |
   | 21:00 · 17/9 | v1.0 (CP4) | Khóa Quality Bar ở mốc $\ge 85\%$, siết chặt trích dẫn trọng tâm [T02-013], hoàn thiện Spec 9 phần. | Chốt hạn nộp Spec Checkpoint 4. |
+  | 10:30 · 18/9 | v1.1 (CP5/CP6) | Thử nghiệm với 2 Willing Users (validation log), tối ưu nổi bật Quick Action Chips và bổ sung thư mục reflection/ của 4 thành viên. | Đáp ứng tiêu chí R6 (Bonus +8đ) và chuẩn bị nghiệm thu CP6. |
 
-- **Tự khai phần còn thiếu phục vụ CP5 & CP6 (Remaining Work):**
+- **Tiến độ hoàn thiện các hạng mục phục vụ CP5 & CP6:**
   1. [ ] Xuất file slide thuyết trình 6 trang định dạng PDF (`demo-slides.pdf`) phục vụ báo cáo CP5.
   2. [ ] Quay video demo dự phòng 5 phút (ghi lại trọn vẹn 4 kịch bản bấm live trên ứng dụng) đề phòng sự cố mạng khi demo trực tiếp tại CP6.
-  3. [ ] Thu thập biên bản phản hồi (Feedback Log) từ 2 Willing Users ngoài nhóm trong sáng 18/9 để lấy điểm thưởng R6.
+  3. [x] Thu thập biên bản phản hồi (Feedback Log) từ 2 Willing Users ngoài nhóm (lưu tại `validation/user_testing_log.md` — Bonus R6).
+  4. [x] Hoàn thiện 4 bản Reflection cá nhân cho 4 thành viên (lưu tại thư mục `reflection/`).
+  5. [x] Đồng bộ toàn bộ dữ liệu kiểm thử và báo cáo số đo vào thư mục `eval/` (Rubric R4).

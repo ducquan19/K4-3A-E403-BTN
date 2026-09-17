@@ -1,4 +1,4 @@
-﻿# Mini Hackathon AI — Batch 04 · Lớp 3A
+# Mini Hackathon AI — Batch 04 · Lớp 3A
 
 **SPEC → Prototype → Demo.** Đây không phải cuộc thi code — đây là cuộc thi **tư duy sản phẩm AI**.
 
@@ -95,17 +95,28 @@ Hệ thống sẽ chạy qua 20 ca kiểm thử thực tế (4 lớp chỗ khó)
 
 ```
 K4-3A-E403-BTN/
-├── README.md              ← File này (Bảng thành viên + Hướng dẫn + Thông tin đề tài)
-├── spec.md                ← AI Spec hoàn chỉnh 8 phần (R1, R2, R3, R4)
+├── README.md              ← Bảng thành viên + Phân công vai trò + Hướng dẫn
+├── spec.md                ← AI Spec 9 phần hoàn chỉnh (Đã khóa Quality Bar ≥ 85%)
 ├── canvas-cp1.jpg & .md   ← Canvas 4 ô Checkpoint 1
-├── run.py                 ← Launcher khởi động Fullstack 1 lệnh (R5)
+├── demo-slides.pdf        ← File slide thuyết trình 6 trang (xuất PDF cho CP5/CP6)
+├── run.py                 ← Launcher khởi động Fullstack 1 lệnh duy nhất (R5)
 ├── requirements.txt       ← Danh mục thư viện phụ thuộc
 ├── .env.example           ← Mẫu biến môi trường
 │
-├── scripts/               ← THƯ MỤC CHỨA CÁC SCRIPT KIỂM THỬ & ĐO ĐẠC
-│   ├── test_api.py        ← Script CLI kiểm tra nhanh Gemini API
-│   ├── eval_gemini.py     ← Script chạy bộ đo đạc Golden Set (CP3 / R4)
-│   └── golden_set.json    ← Bộ 20 ca kiểm thử 4 lớp trích từ chatlog thật
+├── eval/                  ← DỮ LIỆU ĐO ĐẠC & ĐÁNH GIÁ (R4 - 15 điểm)
+│   ├── golden_set.json    ← Bộ 20 ca kiểm thử 4 lớp trích từ chatlog thật
+│   ├── eval_gemini.py     ← Script chạy đo đạc tự động qua Gemini API
+│   ├── eval_results.json  ← Dữ liệu thô kết quả đo đạc thời gian thực
+│   └── eval_report.md     ← Bảng tổng kết số đo và tỷ lệ đạt chuẩn (85%)
+│
+├── validation/            ← NHẬT KÝ KIỂM THỬ VỚI NGƯỜI DÙNG THẬT (R6 BONUS - 8 điểm)
+│   └── user_testing_log.md← Biên bản test 5 nhịp của 2 Willing Users ngoài nhóm
+│
+├── reflection/            ← BẢN REFLECTION CÁ NHÂN (Vibe-coding rule)
+│   ├── chu_phuc_anh.md    ← Product Lead
+│   ├── tran_duc_quan.md   ← Data & Eval Lead
+│   ├── bui_minh_quan.md   ← AI & Prompt Engineer
+│   └── do_quang_vinh.md   ← Tech & Prototype Lead
 │
 ├── backend/               ← BACKEND (Python Flask REST API)
 │   ├── app.py             ← Máy chủ API phục vụ /api/chat, /api/lecture
